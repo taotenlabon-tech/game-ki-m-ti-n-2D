@@ -137,7 +137,6 @@
             transform: scale(0.9) !important;
         }
 
-        /* Nút mở thử thách Puzzle phong cách Neon */
         .puzzle-trigger-btn {
             background: linear-gradient(135deg, #ff9f43, #ee5253);
             color: white;
@@ -229,7 +228,7 @@
             box-shadow: 0 2px 5px rgba(255, 71, 87, 0.4);
         }
 
-        /* Hiệu ứng hạt năng lượng nổ (Particles) */
+        /* Hiệu ứng hạt nổ */
         .particle {
             position: absolute;
             pointer-events: none;
@@ -243,7 +242,6 @@
             100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
 
-        /* Hiệu ứng chữ số Elo bay lên */
         .floating-text {
             position: absolute;
             font-weight: 800;
@@ -261,7 +259,6 @@
             100% { opacity: 0; transform: translateY(-70px) scale(1); }
         }
 
-        /* Hiệu ứng BRILLIANT MOVE CỰC HOÀNH TRÁNG */
         .brilliant-popup {
             position: absolute;
             font-weight: 900;
@@ -297,7 +294,7 @@
             100% { opacity: 0; transform: scale(1) translateY(-90px); }
         }
 
-        /* --- MODAL GIẢI BÀI TẬP CỜ VUA (PUZZLE) --- */
+        /* --- MODAL & BÀN CỜ VUA TRỰC QUAN --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -319,13 +316,13 @@
 
         .modal-content {
             background: #2f3640;
-            padding: 30px;
+            padding: 25px;
             border-radius: 24px;
-            max-width: 480px;
+            max-width: 460px;
             width: 90%;
             text-align: center;
             border: 2px solid #f1c40f;
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
+            box-shadow: 0 0 35px rgba(241, 196, 15, 0.4);
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -336,36 +333,61 @@
 
         .modal-content h3 {
             color: #f1c40f;
-            font-size: 1.7rem;
-            margin-bottom: 12px;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
             text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
         }
 
+        /* Giao diện Bàn Cờ Mini */
+        .mini-chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            width: 220px;
+            height: 220px;
+            margin: 12px auto;
+            border: 3px solid #b58863;
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+        }
+
+        .square.light { background-color: #f0d9b5; }
+        .square.dark { background-color: #b58863; }
+        
+        .piece-w { color: #ffffff; text-shadow: 0 1px 2px #000; font-weight: bold; }
+        .piece-b { color: #1e272e; text-shadow: 0 1px 2px rgba(255,255,255,0.3); font-weight: bold; }
+
         .puzzle-desc {
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             color: #f5f6fa;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: #1e272e;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
             border-left: 4px solid #ff9f43;
             text-align: left;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .puzzle-options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .puzzle-opt-btn {
             background: #353b48;
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 14px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -379,7 +401,7 @@
         }
 
         .puzzle-timer {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #ff4757;
             font-weight: bold;
         }
@@ -388,12 +410,11 @@
 <body>
 
     <div class="game-container" id="gameContainer">
-        <!-- Khu vực bấm cờ vua chính -->
         <div class="main-section">
             <div class="score-board">
                 <h1 id="elo">Elo: 400</h1>
                 <p>Tốc độ: <span id="eps">0</span> Elo/giây</p>
-                <div class="progress-container" title="Tiến trình lên cấp Đại Kiện Tướng">
+                <div class="progress-container" title="Tiến trình lên cấp">
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
             </div>
@@ -405,7 +426,6 @@
             <button class="puzzle-trigger-btn" id="btnOpenPuzzle">🎯 Giải Câu Đố Cờ Vua</button>
         </div>
 
-        <!-- Cửa Hàng Nâng Cấp -->
         <div class="shop-section">
             <h2>Phòng Huấn Luyện</h2>
 
@@ -435,10 +455,12 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP GIẢI BÀI TẬP CỜ VUA -->
+    <!-- MODAL POPUP CÓ BÀN CỜ TRỰC QUAN -->
     <div class="modal-overlay" id="puzzleModal">
         <div class="modal-content">
             <h3>⚡ Thử Thách Chiến Thuật</h3>
+            <!-- Bàn cờ hiển thị trực quan bằng ma trận -->
+            <div class="mini-chessboard" id="miniBoard"></div>
             <div class="puzzle-desc" id="puzzleText">Đang tải câu hỏi...</div>
             <div class="puzzle-options" id="puzzleOptions"></div>
             <div class="puzzle-timer">Thời gian: <span id="timerCount">15</span>s</div>
@@ -463,36 +485,61 @@
             gameData = Object.assign(gameData, JSON.parse(savedData));
         }
 
+        // Bảng ký tự Unicode cờ vua (K: Vua, Q: Hậu, R: Xe, B: Tượng, N: Mã, P: Chốt. Viết hoa: Trắng, Thường: Đen)
+        const pieceSymbols = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        // Kho bài tập kèm ma trận bàn cờ 8x8 trực quan
         const puzzleList = [
             {
-                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng ở d1, vua đen kẹt ở g8 với hàng chắn h7. Nước đi nào chiếu hết ngay?",
+                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng kết liễu vua đen thế nào?",
+                board: [
+                    ['.', '.', '.', '.', 'k', '.', '.', '.'],
+                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'Q', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
+                    ['.', '.', '.', '.', 'K', '.', '.', '.']
+                ],
                 options: ["Qxh7#", "Qd8+", "Qxf3"],
                 correct: 0,
                 reward: 250
             },
             {
-                q: "Chiêu thức Bắt đôi (Fork): Mã trắng nhảy vào ô nào để bắt đồng thời Vua và Xe của đối thủ?",
+                q: "Đòn Bắt Đôi (Fork): Mã trắng nhảy ô nào bắt đồng thời Vua và Xe đen?",
+                board: [
+                    ['r', '.', 'b', 'k', '.', 'b', 'n', 'r'],
+                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
+                    ['.', '.', 'n', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'p', 'P', '.', '.', '.'],
+                    ['.', '.', 'N', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
+                    ['R', '.', 'B', 'Q', 'K', 'B', '.', 'R']
+                ],
                 options: ["Nf7+", "Nc3", "Nxd5"],
                 correct: 0,
                 reward: 300
             },
             {
-                q: "Nước đi thiên tài (Brilliant Move): Tượng hy sinh vào ô nào để phá vỡ thành phòng thủ?",
+                q: "Nước đi thiên tài (Brilliant Move): Hy sinh Tượng phá vỡ thành phòng thủ!",
+                board: [
+                    ['r', 'n', 'b', 'q', 'k', '.', 'r', '.'],
+                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
+                    ['.', '.', '.', '.', '.', 'n', '.', '.'],
+                    ['.', '.', 'B', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', 'P', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', 'N', '.', '.'],
+                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
+                    ['R', '.', 'B', 'Q', 'K', '.', '.', 'R']
+                ],
                 options: ["Bxh7+!", "Be2", "Bd3"],
                 correct: 0,
                 reward: 400
-            },
-            {
-                q: "Chiếu hết góc bảng: Xe trắng di chuyển tới ô nào để dứt điểm trận đấu?",
-                options: ["Rh8#", "Rxd7", "Raa1"],
-                correct: 0,
-                reward: 350
-            },
-            {
-                q: "Chốt phong hậu (Promotion): Chốt ở hàng 7 tiến thẳng lên ô nào để hóa Hậu ngay?",
-                options: ["e8=Q", "e8=R", "e8=N"],
-                correct: 0,
-                reward: 200
             }
         ];
 
@@ -506,6 +553,7 @@
         const gameContainer = document.getElementById("gameContainer");
         const progressBar = document.getElementById("progressBar");
         const puzzleModal = document.getElementById("puzzleModal");
+        const miniBoard = document.getElementById("miniBoard");
         const puzzleText = document.getElementById("puzzleText");
         const puzzleOptions = document.getElementById("puzzleOptions");
         const timerCount = document.getElementById("timerCount");
@@ -523,7 +571,6 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
-        // Sound Synthesis
         function playNormalSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -570,7 +617,6 @@
             } catch (e) {}
         }
 
-        // Tạo hiệu ứng hạt nổ lung linh
         function createParticles(e, color) {
             const rect = clickBtn.getBoundingClientRect();
             const startX = e.clientX - rect.left;
@@ -613,7 +659,6 @@
             costAuto2El.innerText = gameData.auto2Cost.toLocaleString();
             countAuto2El.innerText = gameData.auto2Count;
 
-            // Tiến trình cấp độ (Mỗi 2000 Elo lên 1 mốc)
             const progress = (gameData.elo % 2000) / 2000 * 100;
             progressBar.style.width = progress + "%";
 
@@ -629,7 +674,6 @@
 
             if (isBrilliant) {
                 createParticles(e, "#2ed573");
-
                 const container = document.createElement("div");
                 container.className = "brilliant-popup";
                 container.innerHTML = `<div class="brilliant-badge">!!</div> Brilliant +${earnedElo} Elo!`;
@@ -644,7 +688,6 @@
                 setTimeout(() => container.remove(), 1000);
             } else {
                 createParticles(e, "#f1c40f");
-
                 const text = document.createElement("div");
                 text.className = "floating-text";
                 text.innerText = "+" + earnedElo + " Elo";
@@ -655,14 +698,34 @@
             }
         }
 
-        // System Puzzle
+        // --- RENDER BÀN CỜ TRỰC QUAN ---
+        function renderMiniBoard(boardData) {
+            miniBoard.innerHTML = "";
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = document.createElement("div");
+                    const isLight = (r + c) % 2 === 0;
+                    square.className = "square " + (isLight ? "light" : "dark");
+
+                    const pieceChar = boardData[r][c];
+                    if (pieceChar && pieceChar !== '.') {
+                        const symbol = pieceSymbols[pieceChar] || '';
+                        const isWhite = pieceChar === pieceChar.toUpperCase();
+                        square.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${symbol}</span>`;
+                    }
+                    miniBoard.appendChild(square);
+                }
+            }
+        }
+
         function openPuzzle() {
             if (puzzleModal.classList.contains("active")) return;
 
             activePuzzle = puzzleList[Math.floor(Math.random() * puzzleList.length)];
             puzzleText.innerText = activePuzzle.q;
-            puzzleOptions.innerHTML = "";
+            renderMiniBoard(activePuzzle.board);
 
+            puzzleOptions.innerHTML = "";
             activePuzzle.options.forEach((opt, index) => {
                 const btn = document.createElement("button");
                 btn.className = "puzzle-opt-btn";
@@ -691,9 +754,9 @@
             if (selectedIndex === activePuzzle.correct) {
                 gameData.elo += activePuzzle.reward;
                 playBrilliantSound();
-                alert(`🎉 CHÍNH XÁC! Bạn đã giải thành công bài tập và nhận ngay +${activePuzzle.reward} Elo!`);
+                alert(`🎉 CHÍNH XÁC! Bạn đã giải thành công và nhận +${activePuzzle.reward} Elo!`);
             } else {
-                alert("❌ Sai mất rồi! Hãy cố gắng ở câu hỏi tiếp theo nhé.");
+                alert("❌ Sai mất rồi! Hãy thử lại ở câu sau nhé.");
             }
             closePuzzle();
             updateUI();
@@ -704,7 +767,6 @@
             clearInterval(puzzleTimerInterval);
         }
 
-        // Event Listeners
         clickBtn.addEventListener("click", (e) => {
             const isBrilliant = Math.random() < 0.15; 
             const bonusMultiplier = isBrilliant ? 5 : 1;
