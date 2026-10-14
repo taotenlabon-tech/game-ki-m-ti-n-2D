@@ -226,6 +226,30 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
+        // --- HÀM TẠO ÂM THANH "TING" ---
+        function playTingSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.08);
+
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+                    osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch (e) {
+                // Trình duyệt chặn âm thanh nếu chưa tương tác (phòng ngừa)
+            }
+        }
+
         function updateUI() {
             gameData.cps = (gameData.auto1Count * 1) + (gameData.auto2Count * 8);
 
@@ -263,8 +287,9 @@
             setTimeout(() => text.remove(), 800);
         }
 
-    coinBtn.addEventListener("click", (e) => {
+        coinBtn.addEventListener("click", (e) => {
             gameData.money += gameData.clickPower;
+            playTingSound(); // Phát âm thanh khi bấm
             createFloatingText(e);
             updateUI();
         });
