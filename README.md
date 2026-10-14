@@ -10,11 +10,11 @@
             user-select: none;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #1b1b1b, #2c3e50);
+            background: radial-gradient(circle at center, #1e272e 0%, #0f1418 100%);
             color: #f5f6fa;
             display: flex;
             justify-content: center;
@@ -26,15 +26,17 @@
         .game-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            background: #23272a;
+            gap: 25px;
+            background: rgba(35, 39, 42, 0.85);
+            backdrop-filter: blur(10px);
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            max-width: 820px;
-            width: 100%;
-            border: 2px solid #36393f;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 210, 211, 0.15);
+            max-width: 850px;
+            width: 95%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: transform 0.1s ease;
+            position: relative;
         }
 
         .shake {
@@ -58,107 +60,150 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         .score-board {
             margin-bottom: 15px;
+            width: 100%;
         }
 
         .score-board h1 {
-            font-size: 2.3rem;
+            font-size: 2.6rem;
             color: #f1c40f;
+            text-shadow: 0 0 12px rgba(241, 196, 15, 0.5);
             margin-bottom: 5px;
         }
 
         .score-board p {
-            color: #a4b0be;
-            font-size: 1rem;
+            color: #00d2d3;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
-        /* Nút bấm hình Quân Cờ Vua */
+        /* Thanh Tiến Trình Cấp Độ */
+        .progress-container {
+            width: 100%;
+            background: #1e272e;
+            border-radius: 10px;
+            height: 12px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00d2d3, #54a0ff);
+            box-shadow: 0 0 10px #00d2d3;
+            transition: width 0.3s ease;
+        }
+
+        /* Nút bấm hình Quân Cờ Vua 3D Phát Sáng */
+        .chess-btn-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
         .chess-btn {
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, #fbc531 0%, #e1b12c 100%);
-            border: 8px solid #d4ac0d;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #ffeaa7 0%, #fdcb6e 60%, #e1b12c 100%);
+            border: 6px solid #f1c40f;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 4.5rem;
+            font-size: 5rem;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(241, 196, 15, 0.4);
-            transition: transform 0.05s ease-in-out, box-shadow 0.2s;
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.8);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+            animation: floatPulse 3s infinite ease-in-out;
             position: relative;
-            margin-bottom: 15px;
+            z-index: 2;
+        }
+
+        @keyframes floatPulse {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.02); }
         }
 
         .chess-btn:hover {
-            box-shadow: 0 0 35px rgba(241, 196, 15, 0.7);
+            box-shadow: 0 0 45px rgba(241, 196, 15, 0.8), inset 0 0 20px rgba(255, 255, 255, 1);
         }
 
         .chess-btn:active {
-            transform: scale(0.92);
+            transform: scale(0.9) !important;
         }
 
-        /* Nút mở thử thách Puzzle thủ công */
+        /* Nút mở thử thách Puzzle phong cách Neon */
         .puzzle-trigger-btn {
-            background: #e67e22;
+            background: linear-gradient(135deg, #ff9f43, #ee5253);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.4);
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(238, 82, 83, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .puzzle-trigger-btn:hover {
-            background: #d35400;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(238, 82, 83, 0.6);
         }
 
         /* Cửa hàng nâng cấp */
         .shop-section {
-            flex: 1;
-            min-width: 280px;
-            background: #2f3640;
+            flex: 1.1;
+            min-width: 290px;
+            background: rgba(47, 54, 64, 0.6);
             padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #353b48;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .shop-section h2 {
             text-align: center;
-            margin-bottom: 15px;
-            color: #4cd137;
+            margin-bottom: 18px;
+            color: #10ac84;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .upgrade-btn {
             width: 100%;
-            background: #353b48;
+            background: rgba(53, 59, 72, 0.8);
             color: white;
-            border: none;
-            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px 16px;
             margin-bottom: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             text-align: left;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .upgrade-btn:hover:not(:disabled) {
-            background: #00a8ff;
-            color: #fff;
+            background: linear-gradient(135deg, #0984e3, #6c5ce7);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
         }
 
         .upgrade-btn:disabled {
-            background: #1e272e;
+            background: rgba(30, 39, 46, 0.5);
             color: #57606f;
             cursor: not-allowed;
         }
@@ -166,6 +211,7 @@
         .upgrade-info div:first-child {
             font-weight: bold;
             font-size: 1rem;
+            margin-bottom: 3px;
         }
 
         .upgrade-info div:last-child {
@@ -174,69 +220,89 @@
         }
 
         .badge {
-            background: #e84118;
-            padding: 4px 8px;
-            border-radius: 12px;
+            background: #ff4757;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 0.85rem;
             color: #fff;
             font-weight: bold;
+            box-shadow: 0 2px 5px rgba(255, 71, 87, 0.4);
         }
 
+        /* Hiệu ứng hạt năng lượng nổ (Particles) */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleAnim 0.6s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes particleAnim {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+
+        /* Hiệu ứng chữ số Elo bay lên */
         .floating-text {
             position: absolute;
-            font-weight: bold;
-            font-size: 1.4rem;
+            font-weight: 800;
+            font-size: 1.5rem;
             color: #00d2d3;
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 0 10px rgba(0, 210, 211, 0.8);
+            z-index: 20;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-60px); }
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { transform: translateY(-30px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-70px) scale(1); }
         }
 
+        /* Hiệu ứng BRILLIANT MOVE CỰC HOÀNH TRÁNG */
         .brilliant-popup {
             position: absolute;
             font-weight: 900;
             font-size: 2.2rem;
             color: #2ed573;
-            text-shadow: 0 0 15px #2ed573, 0 0 30px #2ed573;
+            text-shadow: 0 0 20px #2ed573, 0 0 40px #2ed573;
             pointer-events: none;
             display: flex;
             align-items: center;
-            gap: 5px;
-            animation: brilliantAnim 1s ease-out forwards;
+            gap: 8px;
+            animation: brilliantAnim 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             white-space: nowrap;
-            z-index: 10;
+            z-index: 30;
         }
 
         .brilliant-badge {
             background: #2ed573;
             color: #fff;
             border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            width: 46px;
+            height: 46px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            box-shadow: 0 0 15px #2ed573;
+            box-shadow: 0 0 20px #2ed573;
         }
 
         @keyframes brilliantAnim {
-            0% { opacity: 0; transform: scale(0.3) translateY(0); }
-            30% { opacity: 1; transform: scale(1.3) translateY(-20px); }
-            100% { opacity: 0; transform: scale(1) translateY(-80px); }
+            0% { opacity: 0; transform: scale(0.2) translateY(0); }
+            40% { opacity: 1; transform: scale(1.3) translateY(-20px); }
+            100% { opacity: 0; transform: scale(1) translateY(-90px); }
         }
 
         /* --- MODAL GIẢI BÀI TẬP CỜ VUA (PUZZLE) --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -254,12 +320,12 @@
         .modal-content {
             background: #2f3640;
             padding: 30px;
-            border-radius: 20px;
-            max-width: 450px;
+            border-radius: 24px;
+            max-width: 480px;
             width: 90%;
             text-align: center;
-            border: 3px solid #f1c40f;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 2px solid #f1c40f;
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.3);
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -270,45 +336,50 @@
 
         .modal-content h3 {
             color: #f1c40f;
-            font-size: 1.6rem;
-            margin-bottom: 10px;
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
         }
 
         .puzzle-desc {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #f5f6fa;
             margin-bottom: 20px;
             background: #1e272e;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 5px solid #e67e22;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #ff9f43;
+            text-align: left;
+            line-height: 1.5;
         }
 
         .puzzle-options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 15px;
         }
 
         .puzzle-opt-btn {
             background: #353b48;
             color: white;
-            border: 2px solid #57606f;
-            padding: 12px;
-            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px;
+            border-radius: 12px;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .puzzle-opt-btn:hover {
-            background: #00a8ff;
-            border-color: #0097e6;
+            background: #0984e3;
+            border-color: #74b9ff;
+            transform: translateY(-2px);
         }
 
         .puzzle-timer {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #ff4757;
             font-weight: bold;
         }
@@ -317,21 +388,24 @@
 <body>
 
     <div class="game-container" id="gameContainer">
-        <!-- Khu vực bấm cờ vua -->
+        <!-- Khu vực bấm cờ vua chính -->
         <div class="main-section">
             <div class="score-board">
                 <h1 id="elo">Elo: 400</h1>
                 <p>Tốc độ: <span id="eps">0</span> Elo/giây</p>
+                <div class="progress-container" title="Tiến trình lên cấp Đại Kiện Tướng">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
             </div>
 
-            <!-- Click quân Hậu -->
-            <div class="chess-btn" id="clickBtn" title="Bấm để tung nước đi chiến thuật">♕</div>
+            <div class="chess-btn-wrapper">
+                <div class="chess-btn" id="clickBtn" title="Bấm để tung nước đi chiến thuật">♕</div>
+            </div>
 
-            <!-- Nút gọi Thử Thách Puzzle -->
-            <button class="puzzle-trigger-btn" id="btnOpenPuzzle">🎯 Thử Thách Chiến Thuật</button>
+            <button class="puzzle-trigger-btn" id="btnOpenPuzzle">🎯 Giải Câu Đố Cờ Vua</button>
         </div>
 
-        <!-- Cửa Hàng Huấn Luyện -->
+        <!-- Cửa Hàng Nâng Cấp -->
         <div class="shop-section">
             <h2>Phòng Huấn Luyện</h2>
 
@@ -364,11 +438,9 @@
     <!-- MODAL POPUP GIẢI BÀI TẬP CỜ VUA -->
     <div class="modal-overlay" id="puzzleModal">
         <div class="modal-content">
-            <h3>⚡ Thử Thách Chiến Thuật!</h3>
+            <h3>⚡ Thử Thách Chiến Thuật</h3>
             <div class="puzzle-desc" id="puzzleText">Đang tải câu hỏi...</div>
-            <div class="puzzle-options" id="puzzleOptions">
-                <!-- Các đáp án sẽ load bằng JS -->
-            </div>
+            <div class="puzzle-options" id="puzzleOptions"></div>
             <div class="puzzle-timer">Thời gian: <span id="timerCount">15</span>s</div>
         </div>
     </div>
@@ -391,10 +463,9 @@
             gameData = Object.assign(gameData, JSON.parse(savedData));
         }
 
-        // Danh sách kho bài tập cờ vua phong phú
         const puzzleList = [
             {
-                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng ở d1, vua đen kẹt ở g8 với hàng chắn h7. Đi nước nào chiếu hết ngay?",
+                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng ở d1, vua đen kẹt ở g8 với hàng chắn h7. Nước đi nào chiếu hết ngay?",
                 options: ["Qxh7#", "Qd8+", "Qxf3"],
                 correct: 0,
                 reward: 250
@@ -406,19 +477,19 @@
                 reward: 300
             },
             {
-                q: "Nước đi thiên tài (Brilliant Move): Tượng hy sinh vào ô nào để phá vỡ thành phòng thủ của đối phương?",
+                q: "Nước đi thiên tài (Brilliant Move): Tượng hy sinh vào ô nào để phá vỡ thành phòng thủ?",
                 options: ["Bxh7+!", "Be2", "Bd3"],
                 correct: 0,
                 reward: 400
             },
             {
-                q: "Chiếu hết kinh điển mẫu Đòn Ghim (Pin) & Kết liễu: Xe trắng bất ngờ chiếu hết góc bảng ở đâu?",
+                q: "Chiếu hết góc bảng: Xe trắng di chuyển tới ô nào để dứt điểm trận đấu?",
                 options: ["Rh8#", "Rxd7", "Raa1"],
                 correct: 0,
                 reward: 350
             },
             {
-                q: "Tạo nước đi Chốt phong hậu (Promotion): Chốt ở hàng 7 tiến thẳng lên ô nào để hóa Hậu ngay lập tức?",
+                q: "Chốt phong hậu (Promotion): Chốt ở hàng 7 tiến thẳng lên ô nào để hóa Hậu ngay?",
                 options: ["e8=Q", "e8=R", "e8=N"],
                 correct: 0,
                 reward: 200
@@ -433,6 +504,7 @@
         const epsEl = document.getElementById("eps");
         const clickBtn = document.getElementById("clickBtn");
         const gameContainer = document.getElementById("gameContainer");
+        const progressBar = document.getElementById("progressBar");
         const puzzleModal = document.getElementById("puzzleModal");
         const puzzleText = document.getElementById("puzzleText");
         const puzzleOptions = document.getElementById("puzzleOptions");
@@ -451,7 +523,7 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
-        // Âm thanh
+        // Sound Synthesis
         function playNormalSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -459,7 +531,7 @@
                 const gainNode = audioCtx.createGain();
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.06);
+                osc.frequency.exponentialRampToValueAtTime(1100, audioCtx.currentTime + 0.06);
                 gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
                 osc.connect(gainNode);
@@ -498,6 +570,34 @@
             } catch (e) {}
         }
 
+        // Tạo hiệu ứng hạt nổ lung linh
+        function createParticles(e, color) {
+            const rect = clickBtn.getBoundingClientRect();
+            const startX = e.clientX - rect.left;
+            const startY = e.clientY - rect.top;
+
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement("div");
+                particle.className = "particle";
+                particle.style.background = color;
+                particle.style.width = Math.random() * 8 + 4 + "px";
+                particle.style.height = particle.style.width;
+
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 60 + 20;
+                const dx = Math.cos(angle) * speed + "px";
+                const dy = Math.sin(angle) * speed + "px";
+
+                particle.style.setProperty('--dx', dx);
+                particle.style.setProperty('--dy', dy);
+                particle.style.left = startX + "px";
+                particle.style.top = startY + "px";
+
+                clickBtn.appendChild(particle);
+                setTimeout(() => particle.remove(), 600);
+            }
+        }
+
         function updateUI() {
             gameData.eps = (gameData.auto1Count * 1) + (gameData.auto2Count * 10);
 
@@ -513,6 +613,10 @@
             costAuto2El.innerText = gameData.auto2Cost.toLocaleString();
             countAuto2El.innerText = gameData.auto2Count;
 
+            // Tiến trình cấp độ (Mỗi 2000 Elo lên 1 mốc)
+            const progress = (gameData.elo % 2000) / 2000 * 100;
+            progressBar.style.width = progress + "%";
+
             btnClickUpgrade.disabled = gameData.elo < gameData.clickCost;
             btnAuto1.disabled = gameData.elo < gameData.auto1Cost;
             btnAuto2.disabled = gameData.elo < gameData.auto2Cost;
@@ -524,6 +628,8 @@
             const y = e.clientY - rect.top - 20;
 
             if (isBrilliant) {
+                createParticles(e, "#2ed573");
+
                 const container = document.createElement("div");
                 container.className = "brilliant-popup";
                 container.innerHTML = `<div class="brilliant-badge">!!</div> Brilliant +${earnedElo} Elo!`;
@@ -537,6 +643,8 @@
 
                 setTimeout(() => container.remove(), 1000);
             } else {
+                createParticles(e, "#f1c40f");
+
                 const text = document.createElement("div");
                 text.className = "floating-text";
                 text.innerText = "+" + earnedElo + " Elo";
@@ -547,11 +655,10 @@
             }
         }
 
-        // --- HỆ THỐNG PUZZLE ---
+        // System Puzzle
         function openPuzzle() {
             if (puzzleModal.classList.contains("active")) return;
 
-            // Chọn ngẫu nhiên 1 câu hỏi
             activePuzzle = puzzleList[Math.floor(Math.random() * puzzleList.length)];
             puzzleText.innerText = activePuzzle.q;
             puzzleOptions.innerHTML = "";
@@ -597,7 +704,7 @@
             clearInterval(puzzleTimerInterval);
         }
 
-        // Click quân cờ
+        // Event Listeners
         clickBtn.addEventListener("click", (e) => {
             const isBrilliant = Math.random() < 0.15; 
             const bonusMultiplier = isBrilliant ? 5 : 1;
@@ -617,7 +724,6 @@
 
         btnOpenPuzzle.addEventListener("click", openPuzzle);
 
-        // Tự động bật câu đố mỗi 45 giây để thử thách người chơi
         setInterval(() => {
             openPuzzle();
         }, 45000);
