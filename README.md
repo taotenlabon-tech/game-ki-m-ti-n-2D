@@ -447,3 +447,442 @@
     </div>
 
     <div class="modal-overlay" id="puzzleModal">
+        <div class="modal-content">
+            <h3>⚡ Thử Thách Chiến Thuật</h3>
+            <div class="mini-chessboard" id="miniBoard"></div>
+            <div class="puzzle-desc" id="puzzleText">Đang tải câu hỏi...</div>
+            <div class="puzzle-options" id="puzzleOptions"></div>
+            <div class="puzzle-timer">Thời gian: <span id="timerCount">15</span>s</div>
+        </div>
+    </div>
+
+    <script>
+        let gameData = {
+            elo: 400,
+            clickPower: 1,
+            clickCost: 15,
+            clickLvl: 1,
+            auto1Count: 0,
+            auto1Cost: 30,
+            auto2Count: 0,
+            auto2Cost: 150,
+            eps: 0,
+            theme: 'classic'
+        };
+
+        const savedData = localStorage.getItem("chessClickerSave");
+        if (savedData) {
+            gameData = Object.assign(gameData, JSON.parse(savedData));
+            setTheme(gameData.theme || 'classic', false);
+        }
+
+        const bgSymbolsContainer = document.getElementById("bgSymbols");
+        const chessPiecesList = ['♙', '♘', '♗', '♖', '♕', '♔', '♟', '♞', '♝', '♜', '♛', '♚'];
+        for (let i = 0; i < 15; i++) {
+            const span = document.createElement("div");
+            span.className = "bg-symbol";
+            span.innerText = chessPiecesList[Math.floor(Math.random() * chessPiecesList.length)];
+            span.style.left = Math.random() * 100 + "%";
+            span.style.animationDuration = (Math.random() * 12 + 8) + "s";
+            span.style.animationDelay = (Math.random() * 5) + "s";
+            bgSymbolsContainer.appendChild(span);
+        }
+
+        function setTheme(themeName, save = true) {
+            gameData.theme = themeName;
+            document.body.className = "";
+            if (themeName === 'emerald') document.body.classList.add('theme-emerald');
+            if (themeName === 'ruby') document.body.classList.add('theme-ruby');
+            if (save) localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
+        }
+
+        const pieceSymbols = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        // BÀN CỜ VUA CHÍNH LÚC BAN ĐẦU
+        let currentBoard = [
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['.', '.', '.', '.', '.', '.', '.', '.'],
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+        ];
+
+        let selectedSquare = null;
+        let validMoves = [];
+
+        const mainBoardEl = document.getElementById("mainBoard");
+
+        function renderMainBoard() {
+            mainBoardEl.innerHTML = "";
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = document.createElement("div");
+                    const isLight = (r + c) % 2 === 0;
+                    square.className = "square-main " + (isLight ? "light" : "dark");
+
+                    if (selectedSquare && selectedSquare.r === r && selectedSquare.c === c) {
+                        square.classList.add("selected");
+                    }
+
+                    const isMove = validMoves.some(m => m.r === r && m.c === c);
+                    if (isMove) {
+                        if (currentBoard[r][c] !== '.') {
+                            square.classList.add("valid-capture");
+                        } else {
+                            square.classList.add("valid-move");
+                        }
+                    }
+
+                    const p = currentBoard[r][c];
+                    if (p !== '.') {
+                        const isWhite = p === p.toUpperCase();
+                        square.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${pieceSymbols[p]}</span>`;
+                    }
+
+                    square.addEventListener("click", (e) => onSquareClick(r, c, e));
+                    mainBoardEl.appendChild(square);
+                }
+            }
+        }
+
+        function onSquareClick(r, c, e) {
+            const p = currentBoard[r][c];
+            
+            // Nếu bấm vào nước đi hợp lệ
+            if (selectedSquare && validMoves.some(m => m.r === r && m.c === c)) {
+                movePiece(selectedSquare.r, selectedSquare.c, r, c, e);
+                selectedSquare = null;
+                validMoves = [];
+                renderMainBoard();
+                return;
+            }
+
+            // Chọn quân cờ
+            if (p !== '.') {
+                selectedSquare = { r, c };
+                validMoves = calculateSimpleValidMoves(r, c);
+            } else {
+                selectedSquare = null;
+                validMoves = [];
+            }
+            renderMainBoard();
+        }
+
+        // Tính các nước đi cơ bản (tiến thẳng, ăn chéo, v.v.)
+        function calculateSimpleValidMoves(r, c) {
+            const moves = [];
+            const piece = currentBoard[r][c];
+            const isWhite = piece === piece.toUpperCase();
+
+            const directions = [
+                [-1, 0], [1, 0], [0, -1], [0, 1],
+                [-1, -1], [-1, 1], [1, -1], [1, 1]
+            ];
+
+            // Cho phép di chuyển xung quanh 1 ô đơn giản để chơi vui vẻ mượt mà
+            directions.forEach(([dr, dc]) => {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                    const target = currentBoard[nr][nc];
+                    if (target === '.' || (isWhite !== (target === target.toUpperCase()))) {
+                        moves.push({ r: nr, c: nc });
+                    }
+                }
+            });
+            return moves;
+        }
+
+        function movePiece(fromR, fromC, toR, toC, e) {
+            const isCapture = currentBoard[toR][toC] !== '.';
+            currentBoard[toR][toC] = currentBoard[fromR][fromC];
+            currentBoard[fromR][fromC] = '.';
+
+            const isBrilliant = Math.random() < 0.15;
+            const multiplier = isBrilliant ? 5 : (isCapture ? 3 : 1);
+            const earnedElo = gameData.clickPower * multiplier;
+
+            gameData.elo += earnedElo;
+
+            if (isBrilliant) {
+                playBrilliantSound();
+            } else {
+                playNormalSound();
+            }
+
+            createClickEffect(e, isBrilliant, earnedElo);
+            updateUI();
+        }
+
+        const puzzleList = [
+            {
+                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng kết liễu vua đen thế nào?",
+                board: [
+                    ['.', '.', '.', '.', 'k', '.', '.', '.'],
+                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'Q', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
+                    ['.', '.', '.', '.', 'K', '.', '.', '.']
+                ],
+                options: ["Qxh7#", "Qd8+", "Qxf3"],
+                correct: 0,
+                reward: 250
+            },
+            {
+                q: "Đòn Bắt Đôi (Fork): Mã trắng nhảy ô nào bắt đồng thời Vua và Xe đen?",
+                board: [
+                    ['r', '.', 'b', 'k', '.', 'b', 'n', 'r'],
+                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
+                    ['.', '.', 'n', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', 'p', 'P', '.', '.', '.'],
+                    ['.', '.', 'N', '.', '.', '.', '.', '.'],
+                    ['.', '.', '.', '.', '.', '.', '.', '.'],
+                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
+                    ['R', '.', 'B', 'Q', 'K', 'B', '.', 'R']
+                ],
+                options: ["Nf7+", "Nc3", "Nxd5"],
+                correct: 0,
+                reward: 300
+            }
+        ];
+
+        let activePuzzle = null;
+        let puzzleTimerInterval = null;
+        let timeLeft = 15;
+
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        const eloEl = document.getElementById("elo");
+        const epsEl = document.getElementById("eps");
+        const gameContainer = document.getElementById("gameContainer");
+        const progressBar = document.getElementById("progressBar");
+        const puzzleModal = document.getElementById("puzzleModal");
+        const miniBoard = document.getElementById("miniBoard");
+        const puzzleText = document.getElementById("puzzleText");
+        const puzzleOptions = document.getElementById("puzzleOptions");
+        const timerCount = document.getElementById("timerCount");
+        const btnOpenPuzzle = document.getElementById("btnOpenPuzzle");
+
+        const btnClickUpgrade = document.getElementById("btnClickUpgrade");
+        const costClickEl = document.getElementById("costClick");
+        const lvlClickEl = document.getElementById("lvlClick");
+
+        const btnAuto1 = document.getElementById("btnAuto1");
+        const costAuto1El = document.getElementById("costAuto1");
+        const countAuto1El = document.getElementById("countAuto1");
+
+        const btnAuto2 = document.getElementById("btnAuto2");
+        const costAuto2El = document.getElementById("costAuto2");
+        const countAuto2El = document.getElementById("countAuto2");
+
+        function playNormalSound() {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+            } catch (e) {}
+        }
+
+        function playBrilliantSound() {
+            try {
+                const ctx = getAudioContext();
+                const frequencies = [523.25, 659.25, 783.99, 1046.50];
+                frequencies.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const osc = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
+                        osc.type = index === 3 ? 'triangle' : 'sine';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+                        osc.connect(gainNode);
+                        gainNode.connect(ctx.destination);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.6);
+                    }, index * 40);
+                });
+            } catch (e) {}
+        }
+
+        function updateUI() {
+            gameData.eps = (gameData.auto1Count * 1) + (gameData.auto2Count * 10);
+            eloEl.innerText = "Elo: " + Math.floor(gameData.elo).toLocaleString();
+            epsEl.innerText = gameData.eps.toLocaleString();
+
+            costClickEl.innerText = gameData.clickCost.toLocaleString();
+            lvlClickEl.innerText = "Lv " + gameData.clickLvl;
+
+            costAuto1El.innerText = gameData.auto1Cost.toLocaleString();
+            countAuto1El.innerText = gameData.auto1Count;
+
+            costAuto2El.innerText = gameData.auto2Cost.toLocaleString();
+            countAuto2El.innerText = gameData.auto2Count;
+
+            const progress = (gameData.elo % 2000) / 2000 * 100;
+            progressBar.style.width = progress + "%";
+
+            btnClickUpgrade.disabled = gameData.elo < gameData.clickCost;
+            btnAuto1.disabled = gameData.elo < gameData.auto1Cost;
+            btnAuto2.disabled = gameData.elo < gameData.auto2Cost;
+        }
+
+        function createClickEffect(e, isBrilliant, earnedElo) {
+            const x = e.clientX - 30;
+            const y = e.clientY - 30;
+
+            if (isBrilliant) {
+                const container = document.createElement("div");
+                container.className = "brilliant-popup";
+                container.innerHTML = `<div class="brilliant-badge">!!</div> Brilliant +${earnedElo} Elo!`;
+                container.style.left = x + "px";
+                container.style.top = y + "px";
+                document.body.appendChild(container);
+
+                gameContainer.classList.remove("shake");
+                void gameContainer.offsetWidth;
+                gameContainer.classList.add("shake");
+
+                setTimeout(() => container.remove(), 1000);
+            } else {
+                const text = document.createElement("div");
+                text.className = "floating-text";
+                text.innerText = "+" + earnedElo + " Elo";
+                text.style.left = x + "px";
+                text.style.top = y + "px";
+                document.body.appendChild(text);
+                setTimeout(() => text.remove(), 800);
+            }
+        }
+
+        function renderMiniBoard(boardData) {
+            miniBoard.innerHTML = "";
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = document.createElement("div");
+                    const isLight = (r + c) % 2 === 0;
+                    square.className = "square " + (isLight ? "light" : "dark");
+                    const pieceChar = boardData[r][c];
+                    if (pieceChar && pieceChar !== '.') {
+                        const isWhite = pieceChar === pieceChar.toUpperCase();
+                        square.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${pieceSymbols[pieceChar]}</span>`;
+                    }
+                    miniBoard.appendChild(square);
+                }
+            }
+        }
+
+        function openPuzzle() {
+            if (puzzleModal.classList.contains("active")) return;
+            activePuzzle = puzzleList[Math.floor(Math.random() * puzzleList.length)];
+            puzzleText.innerText = activePuzzle.q;
+            renderMiniBoard(activePuzzle.board);
+
+            puzzleOptions.innerHTML = "";
+            activePuzzle.options.forEach((opt, index) => {
+                const btn = document.createElement("button");
+                btn.className = "puzzle-opt-btn";
+                btn.innerText = opt;
+                btn.addEventListener("click", () => answerPuzzle(index));
+                puzzleOptions.appendChild(btn);
+            });
+
+            timeLeft = 15;
+            timerCount.innerText = timeLeft;
+            puzzleModal.classList.add("active");
+
+            clearInterval(puzzleTimerInterval);
+            puzzleTimerInterval = setInterval(() => {
+                timeLeft--;
+                timerCount.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(puzzleTimerInterval);
+                    closePuzzle();
+                }
+            }, 1000);
+        }
+
+        function answerPuzzle(selectedIndex) {
+            clearInterval(puzzleTimerInterval);
+            if (selectedIndex === activePuzzle.correct) {
+                gameData.elo += activePuzzle.reward;
+                playBrilliantSound();
+                alert(`🎉 CHÍNH XÁC! Bạn nhận ngay +${activePuzzle.reward} Elo!`);
+            } else {
+                alert("❌ Trả lời sai mất rồi!");
+            }
+            closePuzzle();
+            updateUI();
+        }
+
+        function closePuzzle() {
+            puzzleModal.classList.remove("active");
+            clearInterval(puzzleTimerInterval);
+        }
+
+        btnOpenPuzzle.addEventListener("click", openPuzzle);
+
+        btnClickUpgrade.addEventListener("click", () => {
+            if (gameData.elo >= gameData.clickCost) {
+                gameData.elo -= gameData.clickCost;
+                gameData.clickPower += 1;
+                gameData.clickLvl += 1;
+                gameData.clickCost = Math.floor(gameData.clickCost * 1.5);
+                updateUI();
+            }
+        });
+
+        btnAuto1.addEventListener("click", () => {
+            if (gameData.elo >= gameData.auto1Cost) {
+                gameData.elo -= gameData.auto1Cost;
+                gameData.auto1Count += 1;
+                gameData.auto1Cost = Math.floor(gameData.auto1Cost * 1.3);
+                updateUI();
+            }
+        });
+
+        btnAuto2.addEventListener("click", () => {
+            if (gameData.elo >= gameData.auto2Cost) {
+                gameData.elo -= gameData.auto2Cost;
+                gameData.auto2Count += 1;
+                gameData.auto2Cost = Math.floor(gameData.auto2Cost * 1.4);
+                updateUI();
+            }
+        });
+
+        setInterval(() => {
+            gameData.elo += gameData.eps;
+            updateUI();
+        }, 1000);
+
+        setInterval(() => {
+            localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
+        }, 5000);
+
+        renderMainBoard();
+        updateUI();
+    </script>
+</body>
+</html>
