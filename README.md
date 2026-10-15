@@ -13,34 +13,103 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
+        :root {
+            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(41, 128, 185, 0.15) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(241, 196, 15, 0.08) 0%, transparent 50%);
+            --primary-color: #f1c40f;
+            --accent-color: #00d2d3;
+            --container-bg: rgba(22, 27, 34, 0.88);
+            --border-color: rgba(241, 196, 15, 0.2);
+        }
+
+        body.theme-emerald {
+            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(16, 172, 132, 0.2) 0%, transparent 60%);
+            --primary-color: #10ac84;
+            --accent-color: #55efc4;
+            --border-color: rgba(16, 172, 132, 0.3);
+        }
+
+        body.theme-ruby {
+            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(235, 77, 75, 0.2) 0%, transparent 60%);
+            --primary-color: #ff4757;
+            --accent-color: #ff6b81;
+            --border-color: rgba(255, 71, 87, 0.3);
+        }
+
         body {
             background-color: #0d1117;
-            background-image: 
-                radial-gradient(circle at 50% 30%, rgba(41, 128, 185, 0.15) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(241, 196, 15, 0.08) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f1c40f' fill-opacity='0.025' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h40v40H40V0zM0 40h40v40H0V40z'/%3E%3C/g%3E%3C/svg%3E");
+            background-image: var(--bg-gradient),
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f1c40f' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h40v40H40V0zM0 40h40v40H0V40z'/%3E%3C/g%3E%3C/svg%3E");
             color: #f5f6fa;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Quân cờ bay ở hậu cảnh */
+        .bg-symbols-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-symbol {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.03);
+            animation: floatUpBg linear infinite;
+        }
+
+        @keyframes floatUpBg {
+            0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.08; }
+            80% { opacity: 0.08; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
         .game-container {
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
-            background: rgba(22, 27, 34, 0.88);
+            background: var(--container-bg);
             backdrop-filter: blur(12px);
             padding: 30px;
             border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(241, 196, 15, 0.12);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px var(--border-color);
             max-width: 850px;
             width: 95%;
-            border: 1px solid rgba(241, 196, 15, 0.2);
+            border: 1px solid var(--border-color);
             transition: transform 0.1s ease;
             position: relative;
+            z-index: 10;
+        }
+
+        /* Nút đổi Theme & Cài đặt góc trên */
+        .top-controls {
+            position: absolute;
+            top: 20px; right: 25px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .shake {
@@ -74,13 +143,13 @@
 
         .score-board h1 {
             font-size: 2.6rem;
-            color: #f1c40f;
-            text-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--border-color);
             margin-bottom: 5px;
         }
 
         .score-board p {
-            color: #00d2d3;
+            color: var(--accent-color);
             font-size: 1.1rem;
             font-weight: 600;
         }
@@ -98,11 +167,12 @@
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #00d2d3, #54a0ff);
-            box-shadow: 0 0 10px #00d2d3;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            box-shadow: 0 0 10px var(--accent-color);
             transition: width 0.3s ease;
         }
 
+        /* Nút bấm hình Quân Cờ Vua 3D Tiến Hóa & Hào Quang Lửa */
         .chess-btn-wrapper {
             position: relative;
             margin: 20px 0;
@@ -112,14 +182,14 @@
             width: 160px;
             height: 160px;
             background: radial-gradient(circle, #ffeaa7 0%, #fdcb6e 60%, #e1b12c 100%);
-            border: 6px solid #f1c40f;
+            border: 6px solid var(--primary-color);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 5rem;
+            font-size: 4.8rem;
             cursor: pointer;
-            box-shadow: 0 0 35px rgba(241, 196, 15, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 35px var(--border-color), inset 0 0 15px rgba(255, 255, 255, 0.8);
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
             animation: floatPulse 3s infinite ease-in-out;
             position: relative;
@@ -131,8 +201,16 @@
             50% { transform: translateY(-6px) scale(1.02); }
         }
 
-        .chess-btn:hover {
-            box-shadow: 0 0 50px rgba(241, 196, 15, 0.9), inset 0 0 20px rgba(255, 255, 255, 1);
+        /* Hiệu ứng hào quang lửa khi bấm liên tục (Combo Aura) */
+        .chess-btn.fire-aura {
+            box-shadow: 0 0 50px #ff4757, 0 0 90px #ff4757, inset 0 0 25px #ffffff !important;
+            border-color: #ff4757 !important;
+            animation: firePulse 0.4s infinite alternate !important;
+        }
+
+        @keyframes firePulse {
+            0% { transform: scale(0.96); }
+            100% { transform: scale(1.05); }
         }
 
         .chess-btn:active {
@@ -172,11 +250,11 @@
         .shop-section h2 {
             text-align: center;
             margin-bottom: 18px;
-            color: #2ecc71;
+            color: var(--primary-color);
             font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+            text-shadow: 0 0 10px var(--border-color);
         }
 
         .upgrade-btn {
@@ -247,10 +325,10 @@
             position: absolute;
             font-weight: 800;
             font-size: 1.5rem;
-            color: #00d2d3;
+            color: var(--accent-color);
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
-            text-shadow: 0 0 10px rgba(0, 210, 211, 0.8);
+            text-shadow: 0 0 10px var(--accent-color);
             z-index: 20;
         }
 
@@ -295,6 +373,7 @@
             100% { opacity: 0; transform: scale(1) translateY(-90px); }
         }
 
+        /* --- MODAL & BÀN CỜ VUA TRỰC QUAN --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -321,8 +400,8 @@
             max-width: 460px;
             width: 90%;
             text-align: center;
-            border: 2px solid #f1c40f;
-            box-shadow: 0 0 35px rgba(241, 196, 15, 0.4);
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 35px var(--border-color);
             transform: scale(0.8);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -332,10 +411,10 @@
         }
 
         .modal-content h3 {
-            color: #f1c40f;
+            color: var(--primary-color);
             font-size: 1.6rem;
             margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+            text-shadow: 0 0 10px var(--border-color);
         }
 
         .mini-chessboard {
@@ -408,6 +487,16 @@
 </head>
 <body>
 
+    <!-- Các quân cờ trôi nổi ở hình nền -->
+    <div class="bg-symbols-container" id="bgSymbols"></div>
+
+    <!-- Nút đổi chủ đề giao diện -->
+    <div class="top-controls">
+        <button class="theme-btn" onclick="setTheme('classic')">🟡 Cổ Điển</button>
+        <button class="theme-btn" onclick="setTheme('emerald')">🟢 Lục Bảo</button>
+        <button class="theme-btn" onclick="setTheme('ruby')">🔴 Hồng Ngọc</button>
+    </div>
+
     <div class="game-container" id="gameContainer">
         <div class="main-section">
             <div class="score-board">
@@ -418,6 +507,7 @@
                 </div>
             </div>
 
+            <!-- Nút bấm tiến hóa quân cờ -->
             <div class="chess-btn-wrapper">
                 <div class="chess-btn" id="clickBtn" title="Bấm để tung nước đi chiến thuật">♕</div>
             </div>
@@ -454,7 +544,7 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP CÓ BÀN CỜ TRỰC QUAN -->
+    <!-- MODAL POPUP GIẢI CÂU ĐỐ -->
     <div class="modal-overlay" id="puzzleModal">
         <div class="modal-content">
             <h3>⚡ Thử Thách Chiến Thuật</h3>
@@ -475,18 +565,55 @@
             auto1Cost: 30,
             auto2Count: 0,
             auto2Cost: 150,
-            eps: 0
+            eps: 0,
+            theme: 'classic'
         };
 
         const savedData = localStorage.getItem("chessClickerSave");
         if (savedData) {
             gameData = Object.assign(gameData, JSON.parse(savedData));
+            setTheme(gameData.theme || 'classic', false);
+        }
+
+        // Tạo các quân cờ bay tự động ở hậu cảnh
+        const bgSymbolsContainer = document.getElementById("bgSymbols");
+        const chessPiecesList = ['♙', '♘', '♗', '♖', '♕', '♔', '♟', '♞', '♝', '♜', '♛', '♚'];
+        for (let i = 0; i < 15; i++) {
+            const span = document.createElement("div");
+            span.className = "bg-symbol";
+            span.innerText = chessPiecesList[Math.floor(Math.random() * chessPiecesList.length)];
+            span.style.left = Math.random() * 100 + "%";
+            span.style.animationDuration = (Math.random() * 12 + 8) + "s";
+            span.style.animationDelay = (Math.random() * 5) + "s";
+            bgSymbolsContainer.appendChild(span);
+        }
+
+        // Đổi màu chủ đề (Theme)
+        function setTheme(themeName, save = true) {
+            gameData.theme = themeName;
+            document.body.className = "";
+            if (themeName === 'emerald') document.body.classList.add('theme-emerald');
+            if (themeName === 'ruby') document.body.classList.add('theme-ruby');
+            if (save) {
+                localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
+            }
         }
 
         const pieceSymbols = {
             'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
             'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
         };
+
+        // Tiến hóa quân cờ chính theo cấp độ
+        function getEvolutionPiece(lvl) {
+            if (lvl < 5) return '♙';  // Chốt
+            if (lvl < 10) return '♘'; // Mã
+            if (lvl < 15) return '♗'; // Tượng
+            if (lvl < 25) return '♖'; // Xe
+            if (lvl < 40) return '♕'; // Hậu
+            if (lvl < 60) return '♔'; // Vua
+            return '👑';              // Vương miện Đại Kiện Tướng
+        }
 
         const puzzleList = [
             {
@@ -543,7 +670,6 @@
         let puzzleTimerInterval = null;
         let timeLeft = 15;
 
-        // --- KHỞI TẠO KÊNH ÂM THANH CHUNG (FIX LỖI MẤT TIẾNG) ---
         let audioCtx = null;
         function getAudioContext() {
             if (!audioCtx) {
@@ -579,7 +705,6 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
-        // Âm thanh Click Thường (Tiếng quân cờ chạm bàn gỗ)
         function playNormalSound() {
             try {
                 const ctx = getAudioContext();
@@ -601,7 +726,6 @@
             } catch (e) {}
         }
 
-        // Âm thanh Brilliant (Hợp âm chuông ngân vang)
         function playBrilliantSound() {
             try {
                 const ctx = getAudioContext();
@@ -663,6 +787,7 @@
 
             costClickEl.innerText = gameData.clickCost.toLocaleString();
             lvlClickEl.innerText = "Lv " + gameData.clickLvl;
+            clickBtn.innerText = getEvolutionPiece(gameData.clickLvl);
 
             costAuto1El.innerText = gameData.auto1Cost.toLocaleString();
             countAuto1El.innerText = gameData.auto1Count;
@@ -676,6 +801,19 @@
             btnClickUpgrade.disabled = gameData.elo < gameData.clickCost;
             btnAuto1.disabled = gameData.elo < gameData.auto1Cost;
             btnAuto2.disabled = gameData.elo < gameData.auto2Cost;
+        }
+
+        // Theo dõi tốc độ click để bật hiệu ứng lửa hào quang (Combo Aura)
+        let recentClicks = [];
+        function checkClickCombo() {
+            const now = Date.now();
+            recentClicks.push(now);
+            recentClicks = recentClicks.filter(t => now - t < 1000);
+            if (recentClicks.length >= 6) {
+                clickBtn.classList.add("fire-aura");
+            } else {
+                clickBtn.classList.remove("fire-aura");
+            }
         }
 
         function createClickEffect(e, isBrilliant, earnedElo) {
@@ -752,4 +890,89 @@
             puzzleTimerInterval = setInterval(() => {
                 timeLeft--;
                 timerCount.innerText = timeLeft;
-                if (
+                if (timeLeft <= 0) {
+                    clearInterval(puzzleTimerInterval);
+                    closePuzzle();
+                }
+            }, 1000);
+        }
+
+        function answerPuzzle(selectedIndex) {
+            clearInterval(puzzleTimerInterval);
+            if (selectedIndex === activePuzzle.correct) {
+                gameData.elo += activePuzzle.reward;
+                playBrilliantSound();
+                alert(`🎉 CHÍNH XÁC! Bạn đã giải thành công và nhận +${activePuzzle.reward} Elo!`);
+            } else {
+                alert("❌ Sai mất rồi! Hãy thử lại ở câu sau nhé.");
+            }
+            closePuzzle();
+            updateUI();
+        }
+
+        function closePuzzle() {
+            puzzleModal.classList.remove("active");
+            clearInterval(puzzleTimerInterval);
+        }
+
+        clickBtn.addEventListener("click", (e) => {
+            const isBrilliant = Math.random() < 0.15; 
+            const bonusMultiplier = isBrilliant ? 5 : 1;
+            const earnedElo = gameData.clickPower * bonusMultiplier;
+
+            gameData.elo += earnedElo;
+            checkClickCombo();
+
+            if (isBrilliant) {
+                playBrilliantSound();
+            } else {
+                playNormalSound();
+            }
+
+            createClickEffect(e, isBrilliant, earnedElo);
+            updateUI();
+        });
+
+        btnOpenPuzzle.addEventListener("click", openPuzzle);
+
+        btnClickUpgrade.addEventListener("click", () => {
+            if (gameData.elo >= gameData.clickCost) {
+                gameData.elo -= gameData.clickCost;
+                gameData.clickPower += 1;
+                gameData.clickLvl += 1;
+                gameData.clickCost = Math.floor(gameData.clickCost * 1.5);
+                updateUI();
+            }
+        });
+
+        btnAuto1.addEventListener("click", () => {
+            if (gameData.elo >= gameData.auto1Cost) {
+                gameData.elo -= gameData.auto1Cost;
+                gameData.auto1Count += 1;
+                gameData.auto1Cost = Math.floor(gameData.auto1Cost * 1.3);
+                updateUI();
+            }
+        });
+
+        btnAuto2.addEventListener("click", () => {
+            if (gameData.elo >= gameData.auto2Cost) {
+                gameData.elo -= gameData.auto2Cost;
+                gameData.auto2Count += 1;
+                gameData.auto2Cost = Math.floor(gameData.auto2Cost * 1.4);
+                updateUI();
+            }
+        });
+
+        setInterval(() => {
+            gameData.elo += gameData.eps;
+            updateUI();
+        }, 1000);
+
+        setInterval(() => {
+            localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
+        }, 5000);
+
+        updateUI();
+    </script>
+</body>
+</html>
