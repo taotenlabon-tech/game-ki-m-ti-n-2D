@@ -13,8 +13,13 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
+        /* HÌNH NỀN CHUYÊN NGHIỆP CHỦ ĐỀ CỜ VUA */
         body {
-            background: radial-gradient(circle at center, #1e272e 0%, #0f1418 100%);
+            background-color: #0d1117;
+            background-image: 
+                radial-gradient(circle at 50% 30%, rgba(41, 128, 185, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(241, 196, 15, 0.08) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f1c40f' fill-opacity='0.025' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h40v40H40V0zM0 40h40v40H0V40z'/%3E%3C/g%3E%3C/svg%3E");
             color: #f5f6fa;
             display: flex;
             justify-content: center;
@@ -27,14 +32,14 @@
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
-            background: rgba(35, 39, 42, 0.85);
-            backdrop-filter: blur(10px);
+            background: rgba(22, 27, 34, 0.88);
+            backdrop-filter: blur(12px);
             padding: 30px;
             border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 210, 211, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(241, 196, 15, 0.12);
             max-width: 850px;
             width: 95%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(241, 196, 15, 0.2);
             transition: transform 0.1s ease;
             position: relative;
         }
@@ -71,7 +76,7 @@
         .score-board h1 {
             font-size: 2.6rem;
             color: #f1c40f;
-            text-shadow: 0 0 12px rgba(241, 196, 15, 0.5);
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
             margin-bottom: 5px;
         }
 
@@ -84,7 +89,7 @@
         /* Thanh Tiến Trình Cấp Độ */
         .progress-container {
             width: 100%;
-            background: #1e272e;
+            background: #0d1117;
             border-radius: 10px;
             height: 12px;
             margin-top: 10px;
@@ -117,7 +122,7 @@
             align-items: center;
             font-size: 5rem;
             cursor: pointer;
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 35px rgba(241, 196, 15, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.8);
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
             animation: floatPulse 3s infinite ease-in-out;
             position: relative;
@@ -130,7 +135,7 @@
         }
 
         .chess-btn:hover {
-            box-shadow: 0 0 45px rgba(241, 196, 15, 0.8), inset 0 0 20px rgba(255, 255, 255, 1);
+            box-shadow: 0 0 50px rgba(241, 196, 15, 0.9), inset 0 0 20px rgba(255, 255, 255, 1);
         }
 
         .chess-btn:active {
@@ -162,7 +167,7 @@
         .shop-section {
             flex: 1.1;
             min-width: 290px;
-            background: rgba(47, 54, 64, 0.6);
+            background: rgba(33, 38, 45, 0.75);
             padding: 20px;
             border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -171,17 +176,18 @@
         .shop-section h2 {
             text-align: center;
             margin-bottom: 18px;
-            color: #10ac84;
+            color: #2ecc71;
             font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
         }
 
         .upgrade-btn {
             width: 100%;
-            background: rgba(53, 59, 72, 0.8);
+            background: rgba(48, 54, 61, 0.85);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             padding: 14px 16px;
             margin-bottom: 12px;
             border-radius: 12px;
@@ -202,8 +208,8 @@
         }
 
         .upgrade-btn:disabled {
-            background: rgba(30, 39, 46, 0.5);
-            color: #57606f;
+            background: rgba(20, 24, 28, 0.6);
+            color: #484f58;
             cursor: not-allowed;
         }
 
@@ -315,7 +321,7 @@
         }
 
         .modal-content {
-            background: #2f3640;
+            background: #21262d;
             padding: 25px;
             border-radius: 24px;
             max-width: 460px;
@@ -338,7 +344,6 @@
             text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
         }
 
-        /* Giao diện Bàn Cờ Mini */
         .mini-chessboard {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -367,7 +372,7 @@
             font-size: 0.95rem;
             color: #f5f6fa;
             margin-bottom: 15px;
-            background: #1e272e;
+            background: #0d1117;
             padding: 10px 14px;
             border-radius: 10px;
             border-left: 4px solid #ff9f43;
@@ -383,7 +388,7 @@
         }
 
         .puzzle-opt-btn {
-            background: #353b48;
+            background: #30363d;
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px;
@@ -459,7 +464,6 @@
     <div class="modal-overlay" id="puzzleModal">
         <div class="modal-content">
             <h3>⚡ Thử Thách Chiến Thuật</h3>
-            <!-- Bàn cờ hiển thị trực quan bằng ma trận -->
             <div class="mini-chessboard" id="miniBoard"></div>
             <div class="puzzle-desc" id="puzzleText">Đang tải câu hỏi...</div>
             <div class="puzzle-options" id="puzzleOptions"></div>
@@ -485,13 +489,11 @@
             gameData = Object.assign(gameData, JSON.parse(savedData));
         }
 
-        // Bảng ký tự Unicode cờ vua (K: Vua, Q: Hậu, R: Xe, B: Tượng, N: Mã, P: Chốt. Viết hoa: Trắng, Thường: Đen)
         const pieceSymbols = {
             'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
             'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
         };
 
-        // Kho bài tập kèm ma trận bàn cờ 8x8 trực quan
         const puzzleList = [
             {
                 q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng kết liễu vua đen thế nào?",
@@ -614,6 +616,15 @@
                     osc2.start();
                     osc2.stop(audioCtx.currentTime + 0.5);
                 }, 80);
+
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance('Brilliant');
+                    utterance.lang = 'en-US';
+                    utterance.rate = 1.2;
+                    utterance.pitch = 1.3;
+                    window.speechSynthesis.speak(utterance);
+                }
             } catch (e) {}
         }
 
@@ -698,7 +709,6 @@
             }
         }
 
-        // --- RENDER BÀN CỜ TRỰC QUAN ---
         function renderMiniBoard(boardData) {
             miniBoard.innerHTML = "";
             for (let r = 0; r < 8; r++) {
