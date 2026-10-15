@@ -3,456 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Master Clicker - Đấu Cờ & Cày Elo</title>
+    <title>Chess Master - Lichess Style Edition</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
-        :root {
-            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(41, 128, 185, 0.15) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(241, 196, 15, 0.08) 0%, transparent 50%);
-            --primary-color: #f1c40f;
-            --accent-color: #00d2d3;
-            --container-bg: rgba(22, 27, 34, 0.88);
-            --border-color: rgba(241, 196, 15, 0.2);
-        }
-
-        body.theme-emerald {
-            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(16, 172, 132, 0.2) 0%, transparent 60%);
-            --primary-color: #10ac84;
-            --accent-color: #55efc4;
-            --border-color: rgba(16, 172, 132, 0.3);
-        }
-
-        body.theme-ruby {
-            --bg-gradient: radial-gradient(circle at 50% 30%, rgba(235, 77, 75, 0.2) 0%, transparent 60%);
-            --primary-color: #ff4757;
-            --accent-color: #ff6b81;
-            --border-color: rgba(255, 71, 87, 0.3);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: #0d1117;
-            background-image: var(--bg-gradient),
-                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f1c40f' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h40v40H40V0zM0 40h40v40H0V40z'/%3E%3C/g%3E%3C/svg%3E");
-            color: #f5f6fa;
+            background-color: #161512;
+            color: #bababa;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
-            position: relative;
+            padding: 20px;
         }
 
-        .bg-symbols-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .bg-symbol {
-            position: absolute;
-            font-size: 3rem;
-            color: rgba(255, 255, 255, 0.03);
-            animation: floatUpBg linear infinite;
-        }
-
-        @keyframes floatUpBg {
-            0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
-            20% { opacity: 0.08; }
-            80% { opacity: 0.08; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
-
-        .game-container {
+        .game-wrapper {
             display: flex;
             flex-wrap: wrap;
-            gap: 25px;
-            background: var(--container-bg);
-            backdrop-filter: blur(12px);
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px var(--border-color);
-            max-width: 900px;
-            width: 95%;
-            border: 1px solid var(--border-color);
-            position: relative;
-            z-index: 10;
+            gap: 30px;
+            background: #262421;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 820px;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
         }
 
-        .top-controls {
-            position: absolute;
-            top: 15px; right: 25px;
-            display: flex;
-            gap: 10px;
-            z-index: 20;
-        }
-
-        .theme-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .theme-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-        .shake { animation: shakeAnim 0.3s ease-in-out; }
-        @keyframes shakeAnim {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-8px, 5px); }
-            40% { transform: translate(8px, -5px); }
-            60% { transform: translate(-5px, -5px); }
-            80% { transform: translate(5px, 5px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        .main-section {
-            flex: 1.2;
-            min-width: 300px;
-            text-align: center;
+        /* KHU VỰC BÀN CỜ VUA BAN ĐẦU */
+        .board-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
 
-        .score-board { margin-bottom: 12px; width: 100%; }
-        .score-board h1 {
-            font-size: 2.4rem;
-            color: var(--primary-color);
-            text-shadow: 0 0 15px var(--border-color);
-            margin-bottom: 2px;
-        }
-        .score-board p { color: var(--accent-color); font-size: 1.05rem; font-weight: 600; }
-
-        .progress-container {
-            width: 100%;
-            background: #0d1117;
-            border-radius: 10px;
-            height: 10px;
-            margin-top: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
-            box-shadow: 0 0 10px var(--accent-color);
-            transition: width 0.3s ease;
-        }
-
-        /* BÀN CỜ VUA TƯƠNG TÁC 8x8 */
-        .board-wrapper {
-            position: relative;
-            margin: 10px 0;
-        }
-
-        .interactive-board {
+        .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            width: 320px;
-            height: 320px;
-            border: 4px solid #b58863;
-            border-radius: 8px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
-            background: #b58863;
+            width: 360px;
+            height: 360px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
         }
 
-        .square-main {
+        .square {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             cursor: pointer;
             position: relative;
-            transition: background-color 0.15s;
+            transition: background 0.1s;
         }
 
-        .square-main.light { background-color: #f0d9b5; }
-        .square-main.dark { background-color: #b58863; }
-        .square-main.selected { background-color: #769656 !important; }
+        .square.light { background-color: #eeeed2; }
+        .square.dark { background-color: #769656; }
 
-        /* Chấm gợi ý ô có thể đi */
-        .square-main.valid-move::after {
+        .square.selected { background-color: #bbcb2b !important; }
+
+        /* Gợi ý nước đi nhẹ nhàng */
+        .square.valid-move::after {
             content: '';
-            width: 14px; height: 14px;
-            background-color: rgba(46, 213, 115, 0.7);
+            width: 16px;
+            height: 16px;
+            background-color: rgba(20, 85, 30, 0.5);
             border-radius: 50%;
             position: absolute;
         }
 
-        .square-main.valid-capture {
-            background-color: #e74c3c !important;
+        .square.valid-capture {
+            background-color: #d85346 !important;
         }
 
-        .piece-w { color: #ffffff; text-shadow: 0 2px 4px #000; font-weight: bold; }
-        .piece-b { color: #1e272e; text-shadow: 0 1px 3px rgba(255,255,255,0.4); font-weight: bold; }
+        .piece-w { color: #ffffff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); }
+        .piece-b { color: #262421; text-shadow: 0 1px 2px rgba(255,255,255,0.2); }
 
-        .puzzle-trigger-btn {
-            background: linear-gradient(135deg, #ff9f43, #ee5253);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 5px 15px rgba(238, 82, 83, 0.4);
-            margin-top: 5px;
-        }
-
-        .puzzle-trigger-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(238, 82, 83, 0.6);
-        }
-
-        .shop-section {
+        /* KHU VỰC BẢNG ĐIỂM & NÂNG CẤP */
+        .side-panel {
             flex: 1;
             min-width: 280px;
-            background: rgba(33, 38, 45, 0.75);
-            padding: 18px;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .shop-section h2 {
+        .stats-card {
+            background: #1e1c18;
+            padding: 18px;
+            border-radius: 8px;
             text-align: center;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 1.3rem;
+            border-bottom: 3px solid #629924;
+        }
+
+        .stats-card h1 {
+            font-size: 2.2rem;
+            color: #629924;
+            font-weight: 700;
+        }
+
+        .stats-card p {
+            font-size: 0.95rem;
+            color: #8c8c8c;
+            margin-top: 4px;
+        }
+
+        .shop-title {
+            font-size: 1.1rem;
+            color: #dedede;
+            font-weight: 600;
+            margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--border-color);
+            letter-spacing: 0.5px;
         }
 
         .upgrade-btn {
-            width: 100%;
-            background: rgba(48, 54, 61, 0.85);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #363431;
+            border: none;
+            color: #e0e0e0;
             padding: 12px 14px;
-            margin-bottom: 10px;
-            border-radius: 12px;
+            border-radius: 6px;
             cursor: pointer;
-            text-align: left;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: background 0.15s, transform 0.1s;
+            margin-bottom: 8px;
         }
 
         .upgrade-btn:hover:not(:disabled) {
-            background: linear-gradient(135deg, #0984e3, #6c5ce7);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
+            background: #45433f;
+            transform: translateY(-1px);
         }
 
         .upgrade-btn:disabled {
-            background: rgba(20, 24, 28, 0.6);
-            color: #484f58;
+            opacity: 0.4;
             cursor: not-allowed;
         }
 
-        .upgrade-info div:first-child { font-weight: bold; font-size: 0.95rem; }
-        .upgrade-info div:last-child { font-size: 0.8rem; opacity: 0.8; }
-
+        .upgrade-name { font-weight: 600; font-size: 0.95rem; }
+        .upgrade-sub { font-size: 0.8rem; color: #999; }
         .badge {
-            background: #ff4757;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            background: #629924;
             color: #fff;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
+        .puzzle-btn {
+            background: #d68910;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .puzzle-btn:hover { background: #b9770e; }
+
+        /* CHIỮ BAY HIỆU ỨNG */
         .floating-text {
             position: absolute;
-            font-weight: 800;
-            font-size: 1.4rem;
-            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #629924;
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            text-shadow: 0 0 10px var(--accent-color);
-            z-index: 30;
+            animation: floatUp 0.7s ease-out forwards;
+            z-index: 50;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(0.8); }
-            50% { transform: translateY(-25px) scale(1.1); }
-            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
         }
 
-        .brilliant-popup {
-            position: absolute;
-            font-weight: 900;
-            font-size: 2rem;
-            color: #2ed573;
-            text-shadow: 0 0 20px #2ed573, 0 0 40px #2ed573;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            animation: brilliantAnim 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            white-space: nowrap;
-            z-index: 40;
-        }
-
-        .brilliant-badge {
-            background: #2ed573;
-            color: #fff;
-            border-radius: 50%;
-            width: 42px;
-            height: 42px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.4rem;
-            font-weight: bold;
-            box-shadow: 0 0 20px #2ed573;
-        }
-
-        @keyframes brilliantAnim {
-            0% { opacity: 0; transform: scale(0.2) translateY(0); }
-            40% { opacity: 1; transform: scale(1.2) translateY(-15px); }
-            100% { opacity: 0; transform: scale(1) translateY(-75px); }
-        }
-
-        /* MODAL POPUP */
+        /* MODAL CÂU ĐỐ TỐI GIẢN */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.75);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 100;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s;
         }
 
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .modal-content {
-            background: #21262d;
-            padding: 22px;
-            border-radius: 24px;
-            max-width: 440px;
+        .modal-box {
+            background: #262421;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 380px;
             width: 90%;
             text-align: center;
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 35px var(--border-color);
         }
 
-        .modal-content h3 { color: var(--primary-color); font-size: 1.5rem; margin-bottom: 8px; }
+        .modal-box h3 { color: #629924; margin-bottom: 12px; }
 
-        .mini-chessboard {
+        .mini-board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             width: 200px; height: 200px;
             margin: 10px auto;
-            border: 3px solid #b58863;
-            border-radius: 6px;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        .square { display: flex; justify-content: center; align-items: center; font-size: 1.4rem; }
-        .square.light { background-color: #f0d9b5; }
-        .square.dark { background-color: #b58863; }
-
-        .puzzle-desc {
-            font-size: 0.9rem; color: #f5f6fa; margin-bottom: 12px;
-            background: #0d1117; padding: 10px; border-radius: 10px;
-            border-left: 4px solid #ff9f43; text-align: left;
+        .puzzle-opt {
+            background: #363431;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        .puzzle-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .puzzle-opt-btn {
-            background: #30363d; color: white; border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer;
-        }
-        .puzzle-opt-btn:hover { background: #0984e3; }
-        .puzzle-timer { font-size: 0.85rem; color: #ff4757; font-weight: bold; }
+        .puzzle-opt:hover { background: #45433f; }
     </style>
 </head>
 <body>
 
-    <div class="bg-symbols-container" id="bgSymbols"></div>
+    <div class="game-wrapper">
+        <!-- Bàn cờ chính -->
+        <div class="board-container">
+            <div class="board" id="mainBoard"></div>
+        </div>
 
-    <div class="top-controls">
-        <button class="theme-btn" onclick="setTheme('classic')">🟡 Cổ Điển</button>
-        <button class="theme-btn" onclick="setTheme('emerald')">🟢 Lục Bảo</button>
-        <button class="theme-btn" onclick="setTheme('ruby')">🔴 Hồng Ngọc</button>
-    </div>
-
-    <div class="game-container" id="gameContainer">
-        <div class="main-section">
-            <div class="score-board">
+        <!-- Bảng điều khiển side panel -->
+        <div class="side-panel">
+            <div class="stats-card">
                 <h1 id="elo">Elo: 400</h1>
-                <p>Tốc độ: <span id="eps">0</span> Elo/giây</p>
-                <div class="progress-container" title="Tiến trình lên cấp">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
+                <p>Tốc độ tích lũy: <span id="eps">0</span> Elo/s</p>
             </div>
 
-            <!-- BÀN CỜ VUA CHÍNH TƯƠNG TÁC -->
-            <div class="board-wrapper">
-                <div class="interactive-board" id="mainBoard"></div>
+            <div>
+                <div class="shop-title">Huấn luyện & Nâng cấp</div>
+
+                <button class="upgrade-btn" id="btnClickUpgrade">
+                    <div>
+                        <div class="upgrade-name">Luyện Nước Đi</div>
+                        <div class="upgrade-sub">Giá: <span id="costClick">15</span> Elo (+1/nước)</div>
+                    </div>
+                    <span class="badge" id="lvlClick">Lv 1</span>
+                </button>
+
+                <button class="upgrade-btn" id="btnAuto1">
+                    <div>
+                        <div class="upgrade-name">Học Viên Giải Bài</div>
+                        <div class="upgrade-sub">Giá: <span id="costAuto1">30</span> Elo (+1/s)</div>
+                    </div>
+                    <span class="badge" id="countAuto1">0</span>
+                </button>
+
+                <button class="upgrade-btn" id="btnAuto2">
+                    <div>
+                        <div class="upgrade-name">Động Cơ Stockfish</div>
+                        <div class="upgrade-sub">Giá: <span id="costAuto2">150</span> Elo (+10/s)</div>
+                    </div>
+                    <span class="badge" id="countAuto2">0</span>
+                </button>
+
+                <button class="puzzle-btn" id="btnOpenPuzzle">🎯 Thử Thách Chiến Thuật</button>
             </div>
-
-            <button class="puzzle-trigger-btn" id="btnOpenPuzzle">🎯 Giải Câu Đố Cờ Vua</button>
-        </div>
-
-        <div class="shop-section">
-            <h2>Phòng Huấn Luyện</h2>
-
-            <button class="upgrade-btn" id="btnClickUpgrade">
-                <div class="upgrade-info">
-                    <div>Luyện Nước Đi Chiến Thuật</div>
-                    <div>Giá: <span id="costClick">15</span> Elo (+1/nước)</div>
-                </div>
-                <span class="badge" id="lvlClick">Lv 1</span>
-            </button>
-
-            <button class="upgrade-btn" id="btnAuto1">
-                <div class="upgrade-info">
-                    <div>Học Viên Giải Bài Tập</div>
-                    <div>Giá: <span id="costAuto1">30</span> Elo (+1 Elo/s)</div>
-                </div>
-                <span class="badge" id="countAuto1">0</span>
-            </button>
-
-            <button class="upgrade-btn" id="btnAuto2">
-                <div class="upgrade-info">
-                    <div>Động Cơ AI (Stockfish)</div>
-                    <div>Giá: <span id="costAuto2">150</span> Elo (+10 Elo/s)</div>
-                </div>
-                <span class="badge" id="countAuto2">0</span>
-            </button>
         </div>
     </div>
 
+    <!-- MODAL PUZZLE -->
     <div class="modal-overlay" id="puzzleModal">
-        <div class="modal-content">
-            <h3>⚡ Thử Thách Chiến Thuật</h3>
-            <div class="mini-chessboard" id="miniBoard"></div>
-            <div class="puzzle-desc" id="puzzleText">Đang tải câu hỏi...</div>
-            <div class="puzzle-options" id="puzzleOptions"></div>
-            <div class="puzzle-timer">Thời gian: <span id="timerCount">15</span>s</div>
+        <div class="modal-box">
+            <h3>⚡ Thử Thách Cờ Vua</h3>
+            <div class="mini-board" id="miniBoard"></div>
+            <p id="puzzleText" style="font-size: 0.9rem; margin: 8px 0; color: #aaa;"></p>
+            <div id="puzzleOptions"></div>
         </div>
     </div>
 
@@ -466,43 +309,18 @@
             auto1Cost: 30,
             auto2Count: 0,
             auto2Cost: 150,
-            eps: 0,
-            theme: 'classic'
+            eps: 0
         };
 
-        const savedData = localStorage.getItem("chessClickerSave");
-        if (savedData) {
-            gameData = Object.assign(gameData, JSON.parse(savedData));
-            setTheme(gameData.theme || 'classic', false);
-        }
+        const saved = localStorage.getItem("chessLichessSave");
+        if (saved) gameData = Object.assign(gameData, JSON.parse(saved));
 
-        const bgSymbolsContainer = document.getElementById("bgSymbols");
-        const chessPiecesList = ['♙', '♘', '♗', '♖', '♕', '♔', '♟', '♞', '♝', '♜', '♛', '♚'];
-        for (let i = 0; i < 15; i++) {
-            const span = document.createElement("div");
-            span.className = "bg-symbol";
-            span.innerText = chessPiecesList[Math.floor(Math.random() * chessPiecesList.length)];
-            span.style.left = Math.random() * 100 + "%";
-            span.style.animationDuration = (Math.random() * 12 + 8) + "s";
-            span.style.animationDelay = (Math.random() * 5) + "s";
-            bgSymbolsContainer.appendChild(span);
-        }
-
-        function setTheme(themeName, save = true) {
-            gameData.theme = themeName;
-            document.body.className = "";
-            if (themeName === 'emerald') document.body.classList.add('theme-emerald');
-            if (themeName === 'ruby') document.body.classList.add('theme-ruby');
-            if (save) localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
-        }
-
-        const pieceSymbols = {
+        const symbols = {
             'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
             'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
         };
 
-        // BÀN CỜ VUA CHÍNH LÚC BAN ĐẦU
-        let currentBoard = [
+        let boardState = [
             ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
             ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -513,85 +331,81 @@
             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         ];
 
-        let selectedSquare = null;
+        let selected = null;
         let validMoves = [];
 
         const mainBoardEl = document.getElementById("mainBoard");
 
-        function renderMainBoard() {
+        function renderBoard() {
             mainBoardEl.innerHTML = "";
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    const square = document.createElement("div");
-                    const isLight = (r + c) % 2 === 0;
-                    square.className = "square-main " + (isLight ? "light" : "dark");
+                    const sq = document.createElement("div");
+                    sq.className = "square " + ((r + c) % 2 === 0 ? "light" : "dark");
 
-                    if (selectedSquare && selectedSquare.r === r && selectedSquare.c === c) {
-                        square.classList.add("selected");
-                    }
+                    if (selected && selected.r === r && selected.c === c) sq.classList.add("selected");
 
                     const isMove = validMoves.some(m => m.r === r && m.c === c);
                     if (isMove) {
-                        if (currentBoard[r][c] !== '.') {
-                            square.classList.add("valid-capture");
-                        } else {
-                            square.classList.add("valid-move");
-                        }
+                        if (boardState[r][c] !== '.') sq.classList.add("valid-capture");
+                        else sq.classList.add("valid-move");
                     }
 
-                    const p = currentBoard[r][c];
+                    const p = boardState[r][c];
                     if (p !== '.') {
                         const isWhite = p === p.toUpperCase();
-                        square.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${pieceSymbols[p]}</span>`;
+                        sq.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${symbols[p]}</span>`;
                     }
 
-                    square.addEventListener("click", (e) => onSquareClick(r, c, e));
-                    mainBoardEl.appendChild(square);
+                    sq.addEventListener("click", (e) => handleClick(r, c, e));
+                    mainBoardEl.appendChild(sq);
                 }
             }
         }
 
-        function onSquareClick(r, c, e) {
-            const p = currentBoard[r][c];
-            
-            // Nếu bấm vào nước đi hợp lệ
-            if (selectedSquare && validMoves.some(m => m.r === r && m.c === c)) {
-                movePiece(selectedSquare.r, selectedSquare.c, r, c, e);
-                selectedSquare = null;
+        function handleClick(r, c, e) {
+            const p = boardState[r][c];
+
+            if (selected && validMoves.some(m => m.r === r && m.c === c)) {
+                // Di chuyển quân
+                const isCapture = boardState[r][c] !== '.';
+                boardState[r][c] = boardState[selected.r][selected.c];
+                boardState[selected.r][selected.c] = '.';
+
+                const gain = gameData.clickPower * (isCapture ? 3 : 1);
+                gameData.elo += gain;
+
+                playSound();
+                showFloatText(e.clientX, e.clientY, "+" + gain + " Elo");
+
+                selected = null;
                 validMoves = [];
-                renderMainBoard();
+                renderBoard();
+                updateUI();
                 return;
             }
 
-            // Chọn quân cờ
             if (p !== '.') {
-                selectedSquare = { r, c };
-                validMoves = calculateSimpleValidMoves(r, c);
+                selected = { r, c };
+                validMoves = getMoves(r, c);
             } else {
-                selectedSquare = null;
+                selected = null;
                 validMoves = [];
             }
-            renderMainBoard();
+            renderBoard();
         }
 
-        // Tính các nước đi cơ bản (tiến thẳng, ăn chéo, v.v.)
-        function calculateSimpleValidMoves(r, c) {
+        function getMoves(r, c) {
             const moves = [];
-            const piece = currentBoard[r][c];
-            const isWhite = piece === piece.toUpperCase();
+            const p = boardState[r][c];
+            const isWhite = p === p.toUpperCase();
+            const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
 
-            const directions = [
-                [-1, 0], [1, 0], [0, -1], [0, 1],
-                [-1, -1], [-1, 1], [1, -1], [1, 1]
-            ];
-
-            // Cho phép di chuyển xung quanh 1 ô đơn giản để chơi vui vẻ mượt mà
-            directions.forEach(([dr, dc]) => {
-                const nr = r + dr;
-                const nc = c + dc;
+            dirs.forEach(([dr, dc]) => {
+                const nr = r + dr, nc = c + dc;
                 if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-                    const target = currentBoard[nr][nc];
-                    if (target === '.' || (isWhite !== (target === target.toUpperCase()))) {
+                    const t = boardState[nr][nc];
+                    if (t === '.' || (isWhite !== (t === t.toUpperCase()))) {
                         moves.push({ r: nr, c: nc });
                     }
                 }
@@ -599,30 +413,85 @@
             return moves;
         }
 
-        function movePiece(fromR, fromC, toR, toC, e) {
-            const isCapture = currentBoard[toR][toC] !== '.';
-            currentBoard[toR][toC] = currentBoard[fromR][fromC];
-            currentBoard[fromR][fromC] = '.';
-
-            const isBrilliant = Math.random() < 0.15;
-            const multiplier = isBrilliant ? 5 : (isCapture ? 3 : 1);
-            const earnedElo = gameData.clickPower * multiplier;
-
-            gameData.elo += earnedElo;
-
-            if (isBrilliant) {
-                playBrilliantSound();
-            } else {
-                playNormalSound();
-            }
-
-            createClickEffect(e, isBrilliant, earnedElo);
-            updateUI();
+        function playSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+            } catch (e) {}
         }
 
+        function showFloatText(x, y, txt) {
+            const el = document.createElement("div");
+            el.className = "floating-text";
+            el.innerText = txt;
+            el.style.left = (x - 20) + "px";
+            el.style.top = (y - 20) + "px";
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 700);
+        }
+
+        function updateUI() {
+            gameData.eps = (gameData.auto1Count * 1) + (gameData.auto2Count * 10);
+            document.getElementById("elo").innerText = "Elo: " + Math.floor(gameData.elo).toLocaleString();
+            document.getElementById("eps").innerText = gameData.eps.toLocaleString();
+
+            document.getElementById("costClick").innerText = gameData.clickCost.toLocaleString();
+            document.getElementById("lvlClick").innerText = "Lv " + gameData.clickLvl;
+
+            document.getElementById("costAuto1").innerText = gameData.auto1Cost.toLocaleString();
+            document.getElementById("countAuto1").innerText = gameData.auto1Count;
+
+            document.getElementById("costAuto2").innerText = gameData.auto2Cost.toLocaleString();
+            document.getElementById("countAuto2").innerText = gameData.auto2Count;
+
+            document.getElementById("btnClickUpgrade").disabled = gameData.elo < gameData.clickCost;
+            document.getElementById("btnAuto1").disabled = gameData.elo < gameData.auto1Cost;
+            document.getElementById("btnAuto2").disabled = gameData.elo < gameData.auto2Cost;
+        }
+
+        // SHOP EVENT
+        document.getElementById("btnClickUpgrade").onclick = () => {
+            if (gameData.elo >= gameData.clickCost) {
+                gameData.elo -= gameData.clickCost;
+                gameData.clickPower += 1;
+                gameData.clickLvl += 1;
+                gameData.clickCost = Math.floor(gameData.clickCost * 1.5);
+                updateUI();
+            }
+        };
+
+        document.getElementById("btnAuto1").onclick = () => {
+            if (gameData.elo >= gameData.auto1Cost) {
+                gameData.elo -= gameData.auto1Cost;
+                gameData.auto1Count += 1;
+                gameData.auto1Cost = Math.floor(gameData.auto1Cost * 1.3);
+                updateUI();
+            }
+        };
+
+        document.getElementById("btnAuto2").onclick = () => {
+            if (gameData.elo >= gameData.auto2Cost) {
+                gameData.elo -= gameData.auto2Cost;
+                gameData.auto2Count += 1;
+                gameData.auto2Cost = Math.floor(gameData.auto2Cost * 1.4);
+                updateUI();
+            }
+        };
+
+        // PUZZLE SYSTEM
         const puzzleList = [
             {
-                q: "Chiếu hết 1 nước (Mate in 1): Hậu trắng kết liễu vua đen thế nào?",
+                q: "Chiếu hết 1 nước (Mate in 1): Nước đi nào kết liễu trận đấu?",
                 board: [
                     ['.', '.', '.', '.', 'k', '.', '.', '.'],
                     ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
@@ -636,241 +505,48 @@
                 options: ["Qxh7#", "Qd8+", "Qxf3"],
                 correct: 0,
                 reward: 250
-            },
-            {
-                q: "Đòn Bắt Đôi (Fork): Mã trắng nhảy ô nào bắt đồng thời Vua và Xe đen?",
-                board: [
-                    ['r', '.', 'b', 'k', '.', 'b', 'n', 'r'],
-                    ['p', 'p', 'p', '.', '.', 'p', 'p', 'p'],
-                    ['.', '.', 'n', '.', '.', '.', '.', '.'],
-                    ['.', '.', '.', 'p', 'P', '.', '.', '.'],
-                    ['.', '.', 'N', '.', '.', '.', '.', '.'],
-                    ['.', '.', '.', '.', '.', '.', '.', '.'],
-                    ['P', 'P', 'P', 'P', '.', 'P', 'P', 'P'],
-                    ['R', '.', 'B', 'Q', 'K', 'B', '.', 'R']
-                ],
-                options: ["Nf7+", "Nc3", "Nxd5"],
-                correct: 0,
-                reward: 300
             }
         ];
 
-        let activePuzzle = null;
-        let puzzleTimerInterval = null;
-        let timeLeft = 15;
-
-        let audioCtx = null;
-        function getAudioContext() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
-
-        const eloEl = document.getElementById("elo");
-        const epsEl = document.getElementById("eps");
-        const gameContainer = document.getElementById("gameContainer");
-        const progressBar = document.getElementById("progressBar");
         const puzzleModal = document.getElementById("puzzleModal");
-        const miniBoard = document.getElementById("miniBoard");
-        const puzzleText = document.getElementById("puzzleText");
-        const puzzleOptions = document.getElementById("puzzleOptions");
-        const timerCount = document.getElementById("timerCount");
-        const btnOpenPuzzle = document.getElementById("btnOpenPuzzle");
+        document.getElementById("btnOpenPuzzle").onclick = () => {
+            const p = puzzleList[0];
+            document.getElementById("puzzleText").innerText = p.q;
 
-        const btnClickUpgrade = document.getElementById("btnClickUpgrade");
-        const costClickEl = document.getElementById("costClick");
-        const lvlClickEl = document.getElementById("lvlClick");
-
-        const btnAuto1 = document.getElementById("btnAuto1");
-        const costAuto1El = document.getElementById("costAuto1");
-        const countAuto1El = document.getElementById("countAuto1");
-
-        const btnAuto2 = document.getElementById("btnAuto2");
-        const costAuto2El = document.getElementById("costAuto2");
-        const countAuto2El = document.getElementById("countAuto2");
-
-        function playNormalSound() {
-            try {
-                const ctx = getAudioContext();
-                const osc = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(180, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.05);
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-                osc.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.05);
-            } catch (e) {}
-        }
-
-        function playBrilliantSound() {
-            try {
-                const ctx = getAudioContext();
-                const frequencies = [523.25, 659.25, 783.99, 1046.50];
-                frequencies.forEach((freq, index) => {
-                    setTimeout(() => {
-                        const osc = ctx.createOscillator();
-                        const gainNode = ctx.createGain();
-                        osc.type = index === 3 ? 'triangle' : 'sine';
-                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-                        osc.connect(gainNode);
-                        gainNode.connect(ctx.destination);
-                        osc.start();
-                        osc.stop(ctx.currentTime + 0.6);
-                    }, index * 40);
-                });
-            } catch (e) {}
-        }
-
-        function updateUI() {
-            gameData.eps = (gameData.auto1Count * 1) + (gameData.auto2Count * 10);
-            eloEl.innerText = "Elo: " + Math.floor(gameData.elo).toLocaleString();
-            epsEl.innerText = gameData.eps.toLocaleString();
-
-            costClickEl.innerText = gameData.clickCost.toLocaleString();
-            lvlClickEl.innerText = "Lv " + gameData.clickLvl;
-
-            costAuto1El.innerText = gameData.auto1Cost.toLocaleString();
-            countAuto1El.innerText = gameData.auto1Count;
-
-            costAuto2El.innerText = gameData.auto2Cost.toLocaleString();
-            countAuto2El.innerText = gameData.auto2Count;
-
-            const progress = (gameData.elo % 2000) / 2000 * 100;
-            progressBar.style.width = progress + "%";
-
-            btnClickUpgrade.disabled = gameData.elo < gameData.clickCost;
-            btnAuto1.disabled = gameData.elo < gameData.auto1Cost;
-            btnAuto2.disabled = gameData.elo < gameData.auto2Cost;
-        }
-
-        function createClickEffect(e, isBrilliant, earnedElo) {
-            const x = e.clientX - 30;
-            const y = e.clientY - 30;
-
-            if (isBrilliant) {
-                const container = document.createElement("div");
-                container.className = "brilliant-popup";
-                container.innerHTML = `<div class="brilliant-badge">!!</div> Brilliant +${earnedElo} Elo!`;
-                container.style.left = x + "px";
-                container.style.top = y + "px";
-                document.body.appendChild(container);
-
-                gameContainer.classList.remove("shake");
-                void gameContainer.offsetWidth;
-                gameContainer.classList.add("shake");
-
-                setTimeout(() => container.remove(), 1000);
-            } else {
-                const text = document.createElement("div");
-                text.className = "floating-text";
-                text.innerText = "+" + earnedElo + " Elo";
-                text.style.left = x + "px";
-                text.style.top = y + "px";
-                document.body.appendChild(text);
-                setTimeout(() => text.remove(), 800);
-            }
-        }
-
-        function renderMiniBoard(boardData) {
-            miniBoard.innerHTML = "";
+            const mb = document.getElementById("miniBoard");
+            mb.innerHTML = "";
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    const square = document.createElement("div");
-                    const isLight = (r + c) % 2 === 0;
-                    square.className = "square " + (isLight ? "light" : "dark");
-                    const pieceChar = boardData[r][c];
-                    if (pieceChar && pieceChar !== '.') {
-                        const isWhite = pieceChar === pieceChar.toUpperCase();
-                        square.innerHTML = `<span class="${isWhite ? 'piece-w' : 'piece-b'}">${pieceSymbols[pieceChar]}</span>`;
+                    const sq = document.createElement("div");
+                    sq.className = "square " + ((r + c) % 2 === 0 ? "light" : "dark");
+                    const ch = p.board[r][c];
+                    if (ch !== '.') {
+                        const isW = ch === ch.toUpperCase();
+                        sq.innerHTML = `<span class="${isW ? 'piece-w' : 'piece-b'}">${symbols[ch]}</span>`;
                     }
-                    miniBoard.appendChild(square);
+                    mb.appendChild(sq);
                 }
             }
-        }
 
-        function openPuzzle() {
-            if (puzzleModal.classList.contains("active")) return;
-            activePuzzle = puzzleList[Math.floor(Math.random() * puzzleList.length)];
-            puzzleText.innerText = activePuzzle.q;
-            renderMiniBoard(activePuzzle.board);
-
-            puzzleOptions.innerHTML = "";
-            activePuzzle.options.forEach((opt, index) => {
+            const opts = document.getElementById("puzzleOptions");
+            opts.innerHTML = "";
+            p.options.forEach((opt, idx) => {
                 const btn = document.createElement("button");
-                btn.className = "puzzle-opt-btn";
+                btn.className = "puzzle-opt";
                 btn.innerText = opt;
-                btn.addEventListener("click", () => answerPuzzle(index));
-                puzzleOptions.appendChild(btn);
+                btn.onclick = () => {
+                    if (idx === p.correct) {
+                        gameData.elo += p.reward;
+                        alert("🎉 Chính xác! + " + p.reward + " Elo");
+                    } else alert("❌ Sai rồi!");
+                    puzzleModal.classList.remove("active");
+                    updateUI();
+                };
+                opts.appendChild(btn);
             });
 
-            timeLeft = 15;
-            timerCount.innerText = timeLeft;
             puzzleModal.classList.add("active");
-
-            clearInterval(puzzleTimerInterval);
-            puzzleTimerInterval = setInterval(() => {
-                timeLeft--;
-                timerCount.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(puzzleTimerInterval);
-                    closePuzzle();
-                }
-            }, 1000);
-        }
-
-        function answerPuzzle(selectedIndex) {
-            clearInterval(puzzleTimerInterval);
-            if (selectedIndex === activePuzzle.correct) {
-                gameData.elo += activePuzzle.reward;
-                playBrilliantSound();
-                alert(`🎉 CHÍNH XÁC! Bạn nhận ngay +${activePuzzle.reward} Elo!`);
-            } else {
-                alert("❌ Trả lời sai mất rồi!");
-            }
-            closePuzzle();
-            updateUI();
-        }
-
-        function closePuzzle() {
-            puzzleModal.classList.remove("active");
-            clearInterval(puzzleTimerInterval);
-        }
-
-        btnOpenPuzzle.addEventListener("click", openPuzzle);
-
-        btnClickUpgrade.addEventListener("click", () => {
-            if (gameData.elo >= gameData.clickCost) {
-                gameData.elo -= gameData.clickCost;
-                gameData.clickPower += 1;
-                gameData.clickLvl += 1;
-                gameData.clickCost = Math.floor(gameData.clickCost * 1.5);
-                updateUI();
-            }
-        });
-
-        btnAuto1.addEventListener("click", () => {
-            if (gameData.elo >= gameData.auto1Cost) {
-                gameData.elo -= gameData.auto1Cost;
-                gameData.auto1Count += 1;
-                gameData.auto1Cost = Math.floor(gameData.auto1Cost * 1.3);
-                updateUI();
-            }
-        });
-
-        btnAuto2.addEventListener("click", () => {
-            if (gameData.elo >= gameData.auto2Cost) {
-                gameData.elo -= gameData.auto2Cost;
-                gameData.auto2Count += 1;
-                gameData.auto2Cost = Math.floor(gameData.auto2Cost * 1.4);
-                updateUI();
-            }
-        });
+        };
 
         setInterval(() => {
             gameData.elo += gameData.eps;
@@ -878,10 +554,10 @@
         }, 1000);
 
         setInterval(() => {
-            localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
+            localStorage.setItem("chessLichessSave", JSON.stringify(gameData));
         }, 5000);
 
-        renderMainBoard();
+        renderBoard();
         updateUI();
     </script>
 </body>
