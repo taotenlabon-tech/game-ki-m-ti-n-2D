@@ -85,7 +85,6 @@
             font-weight: 600;
         }
 
-        /* Thanh Tiến Trình Cấp Độ */
         .progress-container {
             width: 100%;
             background: #0d1117;
@@ -104,7 +103,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Nút bấm hình Quân Cờ Vua 3D Phát Sáng */
         .chess-btn-wrapper {
             position: relative;
             margin: 20px 0;
@@ -162,7 +160,6 @@
             box-shadow: 0 8px 20px rgba(238, 82, 83, 0.6);
         }
 
-        /* Cửa hàng nâng cấp */
         .shop-section {
             flex: 1.1;
             min-width: 290px;
@@ -298,7 +295,6 @@
             100% { opacity: 0; transform: scale(1) translateY(-90px); }
         }
 
-        /* --- MODAL & BÀN CỜ VUA TRỰC QUAN --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -547,6 +543,18 @@
         let puzzleTimerInterval = null;
         let timeLeft = 15;
 
+        // --- KHỞI TẠO KÊNH ÂM THANH CHUNG (FIX LỖI MẤT TIẾNG) ---
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
         const eloEl = document.getElementById("elo");
         const epsEl = document.getElementById("eps");
         const clickBtn = document.getElementById("clickBtn");
@@ -571,51 +579,50 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
-        // --- ÂM THANH CLICK THƯỜNG: Tiếng quân cờ chạm bàn gỗ ---
+        // Âm thanh Click Thường (Tiếng quân cờ chạm bàn gỗ)
         function playNormalSound() {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
                 
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+                osc.frequency.setValueAtTime(180, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.05);
                 
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
                 
                 osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                gainNode.connect(ctx.destination);
                 
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
+                osc.stop(ctx.currentTime + 0.05);
             } catch (e) {}
         }
 
-        // --- ÂM THANH BRILLIANT: Hợp âm chuông ngân vang hào hùng ---
+        // Âm thanh Brilliant (Hợp âm chuông ngân vang)
         function playBrilliantSound() {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                // Hợp âm rải C Major (C5, E5, G5, C6) tạo cảm giác chiến thắng cực sướng tai
+                const ctx = getAudioContext();
                 const frequencies = [523.25, 659.25, 783.99, 1046.50];
                 
                 frequencies.forEach((freq, index) => {
                     setTimeout(() => {
-                        const osc = audioCtx.createOscillator();
-                        const gainNode = audioCtx.createGain();
+                        const osc = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
                         
                         osc.type = index === 3 ? 'triangle' : 'sine';
-                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
                         
-                        gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+                        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
                         
                         osc.connect(gainNode);
-                        gainNode.connect(audioCtx.destination);
+                        gainNode.connect(ctx.destination);
                         
                         osc.start();
-                        osc.stop(audioCtx.currentTime + 0.6);
+                        osc.stop(ctx.currentTime + 0.6);
                     }, index * 40);
                 });
             } catch (e) {}
@@ -745,92 +752,4 @@
             puzzleTimerInterval = setInterval(() => {
                 timeLeft--;
                 timerCount.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(puzzleTimerInterval);
-                    closePuzzle();
-                }
-            }, 1000);
-        }
-
-        function answerPuzzle(selectedIndex) {
-            clearInterval(puzzleTimerInterval);
-            if (selectedIndex === activePuzzle.correct) {
-                gameData.elo += activePuzzle.reward;
-                playBrilliantSound();
-                alert(`🎉 CHÍNH XÁC! Bạn đã giải thành công và nhận +${activePuzzle.reward} Elo!`);
-            } else {
-                alert("❌ Sai mất rồi! Hãy thử lại ở câu sau nhé.");
-            }
-            closePuzzle();
-            updateUI();
-        }
-
-        function closePuzzle() {
-            puzzleModal.classList.remove("active");
-            clearInterval(puzzleTimerInterval);
-        }
-
-        clickBtn.addEventListener("click", (e) => {
-            const isBrilliant = Math.random() < 0.15; 
-            const bonusMultiplier = isBrilliant ? 5 : 1;
-            const earnedElo = gameData.clickPower * bonusMultiplier;
-
-            gameData.elo += earnedElo;
-
-            if (isBrilliant) {
-                playBrilliantSound();
-            } else {
-                playNormalSound();
-            }
-
-            createClickEffect(e, isBrilliant, earnedElo);
-            updateUI();
-        });
-
-        btnOpenPuzzle.addEventListener("click", openPuzzle);
-
-        setInterval(() => {
-            openPuzzle();
-        }, 45000);
-
-        btnClickUpgrade.addEventListener("click", () => {
-            if (gameData.elo >= gameData.clickCost) {
-                gameData.elo -= gameData.clickCost;
-                gameData.clickPower += 1;
-                gameData.clickLvl += 1;
-                gameData.clickCost = Math.floor(gameData.clickCost * 1.5);
-                updateUI();
-            }
-        });
-
-        btnAuto1.addEventListener("click", () => {
-            if (gameData.elo >= gameData.auto1Cost) {
-                gameData.elo -= gameData.auto1Cost;
-                gameData.auto1Count += 1;
-                gameData.auto1Cost = Math.floor(gameData.auto1Cost * 1.3);
-                updateUI();
-            }
-        });
-
-        btnAuto2.addEventListener("click", () => {
-            if (gameData.elo >= gameData.auto2Cost) {
-                gameData.elo -= gameData.auto2Cost;
-                gameData.auto2Count += 1;
-                gameData.auto2Cost = Math.floor(gameData.auto2Cost * 1.4);
-                updateUI();
-            }
-        });
-
-        setInterval(() => {
-            gameData.elo += gameData.eps;
-            updateUI();
-        }, 1000);
-
-        setInterval(() => {
-            localStorage.setItem("chessClickerSave", JSON.stringify(gameData));
-        }, 5000);
-
-        updateUI();
-    </script>
-</body>
-</html>
+                if (
