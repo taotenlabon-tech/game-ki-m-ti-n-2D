@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Master - Lichess Style Edition</title>
+    <title>Chess Master - Auto Play Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -28,16 +28,30 @@
             flex-wrap: wrap;
             gap: 30px;
             background: #262421;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            max-width: 820px;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            max-width: 1000px;
             width: 100%;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
-        /* KHU VỰC BÀN CỜ VUA BAN ĐẦU */
+        .shake {
+            animation: shakeAnim 0.3s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-8px, 5px); }
+            40% { transform: translate(8px, -5px); }
+            60% { transform: translate(-5px, -5px); }
+            80% { transform: translate(5px, 5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* BÀN CỜ VUA KÍCH THƯỚC SIÊU TO */
         .board-container {
             display: flex;
             flex-direction: column;
@@ -47,33 +61,45 @@
         .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            width: 360px;
-            height: 360px;
-            border-radius: 4px;
+            width: 520px;
+            height: 520px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            border: 4px solid #363431;
+        }
+
+        @media (max-width: 600px) {
+            .board {
+                width: 340px;
+                height: 340px;
+            }
         }
 
         .square {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.5rem;
+            font-size: 3.4rem;
             cursor: pointer;
             position: relative;
-            transition: background 0.1s;
+            transition: background 0.15s;
+        }
+
+        @media (max-width: 600px) {
+            .square { font-size: 2.2rem; }
         }
 
         .square.light { background-color: #eeeed2; }
         .square.dark { background-color: #769656; }
 
         .square.selected { background-color: #bbcb2b !important; }
+        .square.last-move { background-color: rgba(205, 210, 106, 0.6) !important; }
 
-        /* Gợi ý nước đi nhẹ nhàng */
         .square.valid-move::after {
             content: '';
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             background-color: rgba(20, 85, 30, 0.5);
             border-radius: 50%;
             position: absolute;
@@ -83,34 +109,34 @@
             background-color: #d85346 !important;
         }
 
-        .piece-w { color: #ffffff; text-shadow: 0 2px 3px rgba(0,0,0,0.8); }
-        .piece-b { color: #262421; text-shadow: 0 1px 2px rgba(255,255,255,0.2); }
+        .piece-w { color: #ffffff; text-shadow: 0 3px 5px rgba(0,0,0,0.8); }
+        .piece-b { color: #262421; text-shadow: 0 1px 3px rgba(255,255,255,0.3); }
 
-        /* KHU VỰC BẢNG ĐIỂM & NÂNG CẤP */
+        /* KHU VỰC ĐIỀU KHIỂN BÊN PHẢI */
         .side-panel {
             flex: 1;
-            min-width: 280px;
+            min-width: 300px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
 
         .stats-card {
             background: #1e1c18;
-            padding: 18px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
-            border-bottom: 3px solid #629924;
+            border-bottom: 4px solid #629924;
         }
 
         .stats-card h1 {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             color: #629924;
             font-weight: 700;
         }
 
         .stats-card p {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #8c8c8c;
             margin-top: 4px;
         }
@@ -119,7 +145,7 @@
             font-size: 1.1rem;
             color: #dedede;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -128,19 +154,20 @@
             background: #363431;
             border: none;
             color: #e0e0e0;
-            padding: 12px 14px;
-            border-radius: 6px;
+            padding: 14px 16px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: background 0.15s, transform 0.1s;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            width: 100%;
         }
 
         .upgrade-btn:hover:not(:disabled) {
             background: #45433f;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .upgrade-btn:disabled {
@@ -148,14 +175,14 @@
             cursor: not-allowed;
         }
 
-        .upgrade-name { font-weight: 600; font-size: 0.95rem; }
-        .upgrade-sub { font-size: 0.8rem; color: #999; }
+        .upgrade-name { font-weight: 600; font-size: 1rem; }
+        .upgrade-sub { font-size: 0.85rem; color: #999; }
         .badge {
             background: #629924;
             color: #fff;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: bold;
         }
 
@@ -164,9 +191,9 @@
             color: #fff;
             border: none;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: background 0.15s;
             margin-top: 5px;
@@ -175,23 +202,59 @@
 
         .puzzle-btn:hover { background: #b9770e; }
 
-        /* CHIỮ BAY HIỆU ỨNG */
+        /* HIỆU ỨNG CHIỮ BAY & BRILLIANT */
         .floating-text {
             position: absolute;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: #629924;
             pointer-events: none;
-            animation: floatUp 0.7s ease-out forwards;
+            animation: floatUp 0.8s ease-out forwards;
             z-index: 50;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-40px); }
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { transform: translateY(-25px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
         }
 
-        /* MODAL CÂU ĐỐ TỐI GIẢN */
+        .brilliant-popup {
+            position: absolute;
+            font-weight: 900;
+            font-size: 2.2rem;
+            color: #2ed573;
+            text-shadow: 0 0 20px #2ed573, 0 0 40px #2ed573;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: brilliantAnim 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            white-space: nowrap;
+            z-index: 60;
+        }
+
+        .brilliant-badge {
+            background: #2ed573;
+            color: #fff;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px #2ed573;
+        }
+
+        @keyframes brilliantAnim {
+            0% { opacity: 0; transform: scale(0.2) translateY(0); }
+            40% { opacity: 1; transform: scale(1.3) translateY(-15px); }
+            100% { opacity: 0; transform: scale(1) translateY(-75px); }
+        }
+
+        /* MODAL CÂU ĐỐ */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -209,9 +272,9 @@
 
         .modal-box {
             background: #262421;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 380px;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 400px;
             width: 90%;
             text-align: center;
         }
@@ -221,7 +284,7 @@
         .mini-board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            width: 200px; height: 200px;
+            width: 220px; height: 220px;
             margin: 10px auto;
             border-radius: 4px;
             overflow: hidden;
@@ -231,9 +294,9 @@
             background: #363431;
             color: #fff;
             border: none;
-            padding: 10px;
+            padding: 12px;
             margin-top: 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             width: 100%;
             cursor: pointer;
             font-weight: 600;
@@ -244,13 +307,13 @@
 </head>
 <body>
 
-    <div class="game-wrapper">
+    <div class="game-wrapper" id="gameWrapper">
         <!-- Bàn cờ chính -->
         <div class="board-container">
             <div class="board" id="mainBoard"></div>
         </div>
 
-        <!-- Bảng điều khiển side panel -->
+        <!-- Bảng điều khiển -->
         <div class="side-panel">
             <div class="stats-card">
                 <h1 id="elo">Elo: 400</h1>
@@ -258,7 +321,7 @@
             </div>
 
             <div>
-                <div class="shop-title">Huấn luyện & Nâng cấp</div>
+                <div class="shop-title">Phòng Huấn Luyện</div>
 
                 <button class="upgrade-btn" id="btnClickUpgrade">
                     <div>
@@ -270,8 +333,8 @@
 
                 <button class="upgrade-btn" id="btnAuto1">
                     <div>
-                        <div class="upgrade-name">Học Viên Giải Bài</div>
-                        <div class="upgrade-sub">Giá: <span id="costAuto1">30</span> Elo (+1/s)</div>
+                        <div class="upgrade-name">Tự Động Đấu Cờ</div>
+                        <div class="upgrade-sub">Giá: <span id="costAuto1">30</span> Elo (+1 Elo/s)</div>
                     </div>
                     <span class="badge" id="countAuto1">0</span>
                 </button>
@@ -279,7 +342,7 @@
                 <button class="upgrade-btn" id="btnAuto2">
                     <div>
                         <div class="upgrade-name">Động Cơ Stockfish</div>
-                        <div class="upgrade-sub">Giá: <span id="costAuto2">150</span> Elo (+10/s)</div>
+                        <div class="upgrade-sub">Giá: <span id="costAuto2">150</span> Elo (+10 Elo/s)</div>
                     </div>
                     <span class="badge" id="countAuto2">0</span>
                 </button>
@@ -294,7 +357,7 @@
         <div class="modal-box">
             <h3>⚡ Thử Thách Cờ Vua</h3>
             <div class="mini-board" id="miniBoard"></div>
-            <p id="puzzleText" style="font-size: 0.9rem; margin: 8px 0; color: #aaa;"></p>
+            <p id="puzzleText" style="font-size: 0.95rem; margin: 8px 0; color: #aaa;"></p>
             <div id="puzzleOptions"></div>
         </div>
     </div>
@@ -312,7 +375,7 @@
             eps: 0
         };
 
-        const saved = localStorage.getItem("chessLichessSave");
+        const saved = localStorage.getItem("chessLichessAutoSave");
         if (saved) gameData = Object.assign(gameData, JSON.parse(saved));
 
         const symbols = {
@@ -320,7 +383,7 @@
             'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
         };
 
-        let boardState = [
+        let initialBoard = [
             ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
             ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
             ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -331,10 +394,59 @@
             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
         ];
 
+        let boardState = JSON.parse(JSON.stringify(initialBoard));
         let selected = null;
         let validMoves = [];
+        let lastMove = null;
 
         const mainBoardEl = document.getElementById("mainBoard");
+        const gameWrapper = document.getElementById("gameWrapper");
+
+        // KHỞI TẠO ÂM THANH
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playNormalSound() {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(160, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+            } catch (e) {}
+        }
+
+        function playBrilliantSound() {
+            try {
+                const ctx = getAudioContext();
+                const freqs = [523.25, 659.25, 783.99, 1046.50];
+                freqs.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = idx === 3 ? 'triangle' : 'sine';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.6);
+                    }, idx * 45);
+                });
+            } catch (e) {}
+        }
 
         function renderBoard() {
             mainBoardEl.innerHTML = "";
@@ -344,6 +456,9 @@
                     sq.className = "square " + ((r + c) % 2 === 0 ? "light" : "dark");
 
                     if (selected && selected.r === r && selected.c === c) sq.classList.add("selected");
+                    if (lastMove && ((lastMove.fromR === r && lastMove.fromC === c) || (lastMove.toR === r && lastMove.toC === c))) {
+                        sq.classList.add("last-move");
+                    }
 
                     const isMove = validMoves.some(m => m.r === r && m.c === c);
                     if (isMove) {
@@ -363,25 +478,42 @@
             }
         }
 
+        function makeMove(fromR, fromC, toR, toC, e) {
+            const isCapture = boardState[toR][toC] !== '.';
+            boardState[toR][toC] = boardState[fromR][fromC];
+            boardState[fromR][fromC] = '.';
+            lastMove = { fromR, fromC, toR, toC };
+
+            // 15% CƠ HỘI BRILLIANT MOVE
+            const isBrilliant = Math.random() < 0.15;
+            const multiplier = isBrilliant ? 5 : (isCapture ? 3 : 1);
+            const gain = gameData.clickPower * multiplier;
+
+            gameData.elo += gain;
+
+            const rect = mainBoardEl.getBoundingClientRect();
+            const posX = e ? e.clientX : rect.left + (toC * (rect.width / 8)) + 30;
+            const posY = e ? e.clientY : rect.top + (toR * (rect.height / 8)) + 30;
+
+            if (isBrilliant) {
+                playBrilliantSound();
+                showBrilliantPopup(posX, posY, gain);
+            } else {
+                playNormalSound();
+                showFloatText(posX, posY, "+" + gain + " Elo");
+            }
+
+            selected = null;
+            validMoves = [];
+            renderBoard();
+            updateUI();
+        }
+
         function handleClick(r, c, e) {
             const p = boardState[r][c];
 
             if (selected && validMoves.some(m => m.r === r && m.c === c)) {
-                // Di chuyển quân
-                const isCapture = boardState[r][c] !== '.';
-                boardState[r][c] = boardState[selected.r][selected.c];
-                boardState[selected.r][selected.c] = '.';
-
-                const gain = gameData.clickPower * (isCapture ? 3 : 1);
-                gameData.elo += gain;
-
-                playSound();
-                showFloatText(e.clientX, e.clientY, "+" + gain + " Elo");
-
-                selected = null;
-                validMoves = [];
-                renderBoard();
-                updateUI();
+                makeMove(selected.r, selected.c, r, c, e);
                 return;
             }
 
@@ -393,6 +525,33 @@
                 validMoves = [];
             }
             renderBoard();
+        }
+
+        // TỰ ĐỘNG DI CHUYỂN QUÂN CỜ
+        function autoPlayMove() {
+            let allPieces = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (boardState[r][c] !== '.') {
+                        const moves = getMoves(r, c);
+                        if (moves.length > 0) {
+                            allPieces.push({ r, c, moves });
+                        }
+                    }
+                }
+            }
+
+            if (allPieces.length === 0) {
+                // Reset bàn cờ nếu hết nước
+                boardState = JSON.parse(JSON.stringify(initialBoard));
+                renderBoard();
+                return;
+            }
+
+            const randomPiece = allPieces[Math.floor(Math.random() * allPieces.length)];
+            const randomMove = randomPiece.moves[Math.floor(Math.random() * randomPiece.moves.length)];
+
+            makeMove(randomPiece.r, randomPiece.c, randomMove.r, randomMove.c, null);
         }
 
         function getMoves(r, c) {
@@ -413,23 +572,6 @@
             return moves;
         }
 
-        function playSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(150, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.05);
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.05);
-            } catch (e) {}
-        }
-
         function showFloatText(x, y, txt) {
             const el = document.createElement("div");
             el.className = "floating-text";
@@ -438,6 +580,21 @@
             el.style.top = (y - 20) + "px";
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 700);
+        }
+
+        function showBrilliantPopup(x, y, gain) {
+            const container = document.createElement("div");
+            container.className = "brilliant-popup";
+            container.innerHTML = `<div class="brilliant-badge">!!</div> Brilliant +${gain} Elo!`;
+            container.style.left = (x - 60) + "px";
+            container.style.top = (y - 30) + "px";
+            document.body.appendChild(container);
+
+            gameWrapper.classList.remove("shake");
+            void gameWrapper.offsetWidth;
+            gameWrapper.classList.add("shake");
+
+            setTimeout(() => container.remove(), 1000);
         }
 
         function updateUI() {
@@ -459,7 +616,7 @@
             document.getElementById("btnAuto2").disabled = gameData.elo < gameData.auto2Cost;
         }
 
-        // SHOP EVENT
+        // BỎ BẤM NÂNG CẤP SHOP
         document.getElementById("btnClickUpgrade").onclick = () => {
             if (gameData.elo >= gameData.clickCost) {
                 gameData.elo -= gameData.clickCost;
@@ -488,7 +645,7 @@
             }
         };
 
-        // PUZZLE SYSTEM
+        // CÂU ĐỐ THỬ THÁCH
         const puzzleList = [
             {
                 q: "Chiếu hết 1 nước (Mate in 1): Nước đi nào kết liễu trận đấu?",
@@ -537,6 +694,7 @@
                 btn.onclick = () => {
                     if (idx === p.correct) {
                         gameData.elo += p.reward;
+                        playBrilliantSound();
                         alert("🎉 Chính xác! + " + p.reward + " Elo");
                     } else alert("❌ Sai rồi!");
                     puzzleModal.classList.remove("active");
@@ -548,13 +706,20 @@
             puzzleModal.classList.add("active");
         };
 
+        // LOOP TỰ ĐỘNG ĐẤU CỜ MỖI 1.5 GIÂY (MẠNH TỰ ĐỘNG KHI CÓ MÁY HOẶC BẤM)
+        setInterval(() => {
+            if (gameData.auto1Count > 0 || gameData.auto2Count > 0) {
+                autoPlayMove();
+            }
+        }, 1500);
+
         setInterval(() => {
             gameData.elo += gameData.eps;
             updateUI();
         }, 1000);
 
         setInterval(() => {
-            localStorage.setItem("chessLichessSave", JSON.stringify(gameData));
+            localStorage.setItem("chessLichessAutoSave", JSON.stringify(gameData));
         }, 5000);
 
         renderBoard();
