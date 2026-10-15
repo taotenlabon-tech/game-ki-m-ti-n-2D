@@ -13,7 +13,6 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
-        /* HÌNH NỀN CHUYÊN NGHIỆP CHỦ ĐỀ CỜ VUA */
         body {
             background-color: #0d1117;
             background-image: 
@@ -234,7 +233,6 @@
             box-shadow: 0 2px 5px rgba(255, 71, 87, 0.4);
         }
 
-        /* Hiệu ứng hạt nổ */
         .particle {
             position: absolute;
             pointer-events: none;
@@ -573,58 +571,53 @@
         const costAuto2El = document.getElementById("costAuto2");
         const countAuto2El = document.getElementById("countAuto2");
 
+        // --- ÂM THANH CLICK THƯỜNG: Tiếng quân cờ chạm bàn gỗ ---
         function playNormalSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1100, audioCtx.currentTime + 0.06);
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+                
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                
                 osc.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
+                
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.06);
+                osc.stop(audioCtx.currentTime + 0.05);
             } catch (e) {}
         }
 
+        // --- ÂM THANH BRILLIANT: Hợp âm chuông ngân vang hào hùng ---
         function playBrilliantSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc1 = audioCtx.createOscillator();
-                const gain1 = audioCtx.createGain();
-                osc1.type = 'triangle';
-                osc1.frequency.setValueAtTime(1046.5, audioCtx.currentTime);
-                gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                osc1.connect(gain1);
-                gain1.connect(audioCtx.destination);
-                osc1.start();
-                osc1.stop(audioCtx.currentTime + 0.3);
-
-                setTimeout(() => {
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(1567.98, audioCtx.currentTime);
-                    gain2.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 0.5);
-                }, 80);
-
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance('Brilliant');
-                    utterance.lang = 'en-US';
-                    utterance.rate = 1.2;
-                    utterance.pitch = 1.3;
-                    window.speechSynthesis.speak(utterance);
-                }
+                // Hợp âm rải C Major (C5, E5, G5, C6) tạo cảm giác chiến thắng cực sướng tai
+                const frequencies = [523.25, 659.25, 783.99, 1046.50];
+                
+                frequencies.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        
+                        osc.type = index === 3 ? 'triangle' : 'sine';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        
+                        gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+                        
+                        osc.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.6);
+                    }, index * 40);
+                });
             } catch (e) {}
         }
 
